@@ -1,5 +1,11 @@
 #include "lcd.h"
 
+uint8_t LCD_Cursor = 0x80;
+void LCD_Handle_Cursor();
+void LCD_Write_Command(char cmd);
+void LCD_Delay();
+
+
 void delay_m(int n){
 int i,j;
 for(i=0;i<n;i++)
@@ -54,6 +60,9 @@ void LCD_Init(void){
 // for the problem of missing first charachter 
 	LCD_Delay();
 	delay_m(2);
+
+LCD_Write_Command(LCD_ON); // blinking cursor , visible cursor
+	LCD_Write_Command(RETURN_HOME); // cursor to the first point
 }
 
 
@@ -67,9 +76,13 @@ void LCD_Write_Command(char cmd){
 }
 
 void LCD_Write_Char(char data){
+
+	LCD_Handle_Cursor(); // update the LCD_Cursor variable to keep track of the cursor position, note : the actual cursor increses automatically when we write a char
+	
 	CTRL_PORT |= (1<<RS);          //rs=1 for writing data data
 	CTRL_PORT &= ~(1<<RW);
 	DATA_PORT = data;
+	
 	CTRL_PORT |= (1<<E);      	   //E=1
 	delay_m(2);
 	CTRL_PORT &= ~(1<<E);          //E=0
@@ -87,18 +100,22 @@ void LCD_Write_String(char* string)
 }
 void LCD_Clear()
 {
-	LCD_Write_Command(CLEAR_COMMAND);
+	LCD_Write_Command(CLEAR_COMMAND); // clear the screen
 	LCD_Delay(); // for the problem of missing first charachter 
+	LCD_Write_Command(RETURN_HOME); // cursor position = top left corner (first position)
+	LCD_Delay(); 
 }
 void LCD_Set_Cursor_Position(uint8_t row, uint8_t col )
 {
 	uint8_t Address ;
 	if (row == 0)
-		Address = 0x80 + col; // 80 is address of first line
+		Address = 0x80 + col; // 80 is address of first line , address of the seconed element in the first line is 0x81 and so on
 	else if (row == 1)			
 		Address = 0xc0 + col; // c0 is address of seconed line
 	
-	if( (row != 0 && row != 1 ) || col < 0 || col > 15 )
+	LCD_Cursor = Address;
+	
+	if( (row != 0 && row != 1 ) || col < 0 || col > 15 ) // if the user is not ray2 and enter a num out of the range
 	{
 		LCD_Clear();
 		LCD_Write_String("ERROR");
@@ -120,35 +137,47 @@ void LCD_Write_String_Position( uint8_t row, uint8_t col , char* string)
 	LCD_Write_String(string);
 }
 
-void LCD_CursorDir_Forward()
-{
-	LCD_Write_Command(SET_CURSOR_DIR_FORWARD);
-	LCD_Delay();
-}
-void LCD_CursorDir_Backword()
-{
-	LCD_Write_Command(SET_CURSOR_DIR_BACKWORD);	
-	LCD_Delay();
-}
+
 void LCD_Shift_Cursor_Left()
 {
-	LCD_Write_Command(SHIFT_CURSOR_LEFT);
-	LCD_Delay();
+	// corner case if we try to go left when we at the most left at the seconed line
+	if(LCD_Cursor == 0xc0 ) // if the cursor on the first index of the seconed line
+	{
+		LCD_Cursor = 0x8F;		// last index in the first line
+		LCD_Write_Command(LCD_Cursor); // set the cursor position with the LCD_Cursor variable
+	}
+	// normal case , update the variable (go left = -1 ) , update the actual cursor
+	else
+	{
+		LCD_Cursor --;
+		LCD_Write_Command(LCD_Cursor);
+	}	
+	
 }
 void LCD_Shift_Cursor_Right()
 {
-	LCD_Write_Command(SHIFT_CURSOR_RIGHT);
-	LCD_Delay();
+	if(LCD_Cursor == 0x8F ) // if the cursor on the last index of the first line
+	{
+		LCD_Cursor = 0xc0;		// first index in the seconed line
+		LCD_Write_Command(LCD_Cursor);
+	}
+	else
+	{
+		LCD_Cursor ++;
+		LCD_Write_Command(LCD_Cursor);
+	}
+	
 }
 
-void LCD_Back()
+void LCD_Back() // delete the previous charachter 
 {
-	LCD_Shift_Cursor_Left();
-	LCD_Write_Char(' ');
-	LCD_Shift_Cursor_Left();
+	LCD_Shift_Cursor_Left(); // the current cursor is on the position after the last char, so shift left to get it
+	LCD_Write_Char(' ');		 // white space for delete
+	LCD_Shift_Cursor_Left(); // when you write ' ' , the cursor position get updated with +1 so we need to shift left again
 }
 void LCD_Blink()
 {
+	// make the screen ON then OFF then ON in a short loop for important messages
 	for(int i = 0 ; i < 3 ; i ++)
 	{
 		delay_m(BLINK_TIME_ms);
@@ -160,22 +189,51 @@ void LCD_Blink()
 }
 
 
-char LCD_Read_Char()
-{
-		CLEAR_BIT(CTRL_PORT,RS);
-		SET_BIT(CTRL_PORT,RW);
+uint8_t LCD_Read_Cursor_Address()
+{	
+	// el function msh sh8ala bs 5leha for future
+		DATA_PORT_DIR = 0x00;			// DATA PORT is Input
 		delay_m(2);
-		while(DATA_PORT & (1<< DB7);
-		return DATA_PORT & 0b01111111;	// cancel the last bit ( the Busy flag bit )
+
+		CLEAR_BIT(CTRL_PORT,RS); // RS = 0 , for cursor address
+		SET_BIT(CTRL_PORT,RW); 	 // RW = 1 , for Read
+		delay_m(2);
+
+	CTRL_PORT |= (1<<E);        	 //E=1
+	delay_m(2);
+	CTRL_PORT &= ~(1<<E);          //E=0
+	
+		uint8_t data = DATA_PORT;		// Read the Cursor Address (Data Port has the cursor address when rs = 0 , rw =1 ) 
+		delay_m(2);
+		DATA_PORT_DIR = 0xFF; 		// make the DATA PORT output agian
+
+		return data;	
 }
 
 
-char LCD_Read_Cursor_Position(uint8_t row , uint8_t col)
+void LCD_Shift_Cursor_Up()
 {
-		LCD_Set_Cursor_Position(row,col);
-
-		CLEAR_BIT(CTRL_PORT,RS);
-		SET_BIT(CTRL_PORT,RW);
-			
-		return LCD_Read_Char();
+	uint8_t cursor_position = LCD_Cursor;
+	if(cursor_position >= 0x80 && cursor_position <= 0x8F ) // if cursor at the first line stay where you are
+		return;
+	else if (cursor_position >= 0xc0 && cursor_position <= 0xcF) // if you are in the seconed line , sub the diffrenece between the 1st and 2nd lines(0x40)
+		LCD_Write_Command(cursor_position - 0x40); // address of 1st = 0x80 & address of 2nd = 0xc0 
+	
 }
+void LCD_Shift_Cursor_Down()
+{
+	uint8_t cursor_position = LCD_Cursor;
+	if(cursor_position >= 0x80 && cursor_position <= 0x8F )  // if cursor at 1st line , add the diffrenece between the 2 lines (0x40)
+		LCD_Write_Command(cursor_position + 0x40); // address of 1st = 0x80 & address of 2nd = 0xc0 , 0xc0 - 0x80 = 0x40
+	else if (cursor_position >= 0xc0 && cursor_position <= 0xcF) // if cursor already at the 2nd line stay where you are
+		return;
+}
+void LCD_Handle_Cursor()
+{
+	if(LCD_Cursor > 0x8F && LCD_Cursor < 0xc0 ) // if the cursor on the last index of the first line
+	{
+		LCD_Cursor = 0xc0;		// first index in the seconed line
+		LCD_Write_Command(LCD_Cursor);
+	}
+	LCD_Cursor ++; // update anyway
+} 
