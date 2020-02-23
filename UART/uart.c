@@ -28,15 +28,15 @@
 	*/
 
 /**
-  * @brief  UART_init Function definition
+  * @brief  UART0_init Function definition
   */
-void UART_init(UART0_HandleTypedef *const uartConfig)
+void UART0_init(UART0_HandleTypedef *const uartConfig)
 {
 	/* Variables  */ 
 		 float32_t baudRateDivisor;
 	   uint16_t intBRD;
 	/* 1. Calling the Function to initialize the clk */ 
-
+			void UART0_MSPInit();
 	/* 2. Disable UART Module */
 		UART0_CTL_R &= ~(UART_CTL_UARTEN);
 	/* 3. Make your Configurations in the UART Registers */
@@ -154,4 +154,74 @@ void UART_init(UART0_HandleTypedef *const uartConfig)
 	
 	
 
+/**
+  * @brief  UART0_trasnmitChar Function definition
+  */
+void UART0_trasnmitChar (uint8_t data)
+{
+	//polling till FIFO is not FULL >> when TXFF in Flag reg ==0 then transmit data 
+	while((UART0_FR_R&UART_FR_TXFF)==1);
+	UART0_DR_R = data ; 	
+}
 
+/**
+  * @brief  UART0_MSPInit Function definition
+  */
+void UART0_MSPInit()
+{
+	//Enable clock for UART0 peripheral 
+	SYSCTL_RCGCUART_R  |= SYSCTL_DC2_UART0;
+	//Enable clock for PORT A
+	SYSCTL_RCGCGPIO_R  |= SYSCTL_DC4_GPIOA;
+	//polling to make sure that clock is enabled 
+	while((SYSCTL_PRGPIO_R & SYSCTL_DC4_GPIOA)==0);
+	//select PA0 , PA1 in PORTA as ALTERNATIVE Function
+	GPIO_PORTA_AFSEL_R |= 0x03;
+	/*Select Type of Alternative Function by 3 steps :
+	 * 1. make change in the 1st 8 bits so, mask the rest of the register 
+	 * 2. give the 1st 4 bits its value >> "GPIO_PCTL_PA0_U0RX" by making OR
+	 * 3. give the 2nd 4 bits its value >> "GPIO_PCTL_PA1_U0TX" by making OR
+	 */
+	GPIO_PORTA_PCTL_R  = (GPIO_PORTA_PCTL_R&0xFFFFFF00) | GPIO_PCTL_PA0_U0RX | GPIO_PCTL_PA1_U0TX ;
+	//Configure  PA0 , PA1  as Digigital 
+	GPIO_PORTA_DEN_R   |= 0x03;
+	//prevent PA0 , PA1  from being analog
+	GPIO_PORTA_AMSEL_R &= ~(0x03); 
+}
+/**
+  * @brief  UART0_trasnmitString Function definition
+  */
+void UART0_trasnmitString (uint8_t *pdata)
+{
+	//polling till reach the NULL of the string 
+	while(*pdata != '\0')
+	{
+		UART0_trasnmitChar(*pdata);
+		pdata++ ; 
+	}
+	//Transmit The NULL 
+	UART0_trasnmitChar(*pdata);
+}
+
+/**
+  * @brief  UART_receiveChar Function definition
+  */
+uint8_t UART_receiveChar (void){
+    
+    while((UART0_FR_R & UART_FR_RXFE));
+    return UART0_DR_R;
+}
+
+/**
+  * @brief  UART_receiveString Function definition
+  */
+
+void UART0_receiveString (uint8_t *pdata)
+{
+	//polling till reach the NULL of the string 
+	while(UART0_receiveChar() != '\0')
+	{
+		*pdata=UART0_receiveChar(); 
+		 pdata++; 
+	}
+}

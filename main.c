@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include "LCD/lcd.h"
+#include "tm4c123gh6pm.h"
 
 void test_LCD();
 int main()

@@ -380,7 +380,7 @@
       </TargetOption>
       <Groups>
         <Group>
-          <GroupName>Source Group 1</GroupName>
+          <GroupName>Src</GroupName>
           <Files>
             <File>
               <FileName>lcd.h</FileName>
@@ -396,6 +396,31 @@
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\main.c</FilePath>
+            </File>
+            <File>
+              <FileName>uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\UART\uart.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>inc</GroupName>
+          <Files>
+            <File>
+              <FileName>uart.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\UART\uart.h</FilePath>
+            </File>
+            <File>
+              <FileName>std_types.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\std_types.h</FilePath>
+            </File>
+            <File>
+              <FileName>tm4c123gh6pm.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\tm4c123gh6pm.h</FilePath>
             </File>
           </Files>
         </Group>
