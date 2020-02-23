@@ -1,3 +1,11 @@
+#ifndef UART_H_
+#define UART_H_
+
+#ifndef F_CPU
+#define F_CPU 1000000UL
+#endif
+
+/****************************includes***************************/
 #include "D:/std_types.h"
 #include "C:/Keil_v5/EE319KwareSpring2020/inc/tm4c123gh6pm.h"
 
@@ -51,6 +59,10 @@ typedef enum{
     RECEIVE_DISABLE = 0
 }UART_ReceiveEnable;
 
+
+/**
+  * @brief  UART handle Structure definition
+  */
 typedef struct
 {
 	uint32_t BaudRate; 	
@@ -68,3 +80,5 @@ typedef struct
 
 /*****************************FUNCTION DECLARATIONS*************************************/ 
 void UART_init(UART0_HandleTypedef *const uartConfig);
+
+#endif
