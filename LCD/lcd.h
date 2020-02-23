@@ -31,22 +31,22 @@
 #define SHIFT_CURSOR_LEFT 0x10
 #define SHIFT_CURSOR_RIGHT 0x14
 #define LCD_OFF 0x8
-#define LCD_ON 0xc
-#define BLINK_TIME_ms 1500
+#define LCD_ON 0xF
+#define RETURN_HOME 0x2
+#define BLINK_TIME_ms 1000
 // Set & Clear 
 #define SET_BIT(REG,BIT) (REG|=(1<<BIT))
 #define CLEAR_BIT(REG,BIT) (REG&=(~(1<<BIT)))
 
 // ************* LCD **************** 
+// public :
 void delay_m(int n);
 void delay_u(int n);
 void LCD_Init(void);
-void LCD_Write_Command(char cmd);
 
 void LCD_Write_Char(char data);
 void LCD_Write_String(char* string);
 void LCD_Clear();
-void LCD_Delay();
 
 void LCD_Set_Cursor_Position(uint8_t row, uint8_t col );
 void LCD_Write_Char_Position(uint8_t row, uint8_t col , char c);
@@ -54,12 +54,8 @@ void LCD_Write_String_Position( uint8_t row, uint8_t col , char* string);
 
 void LCD_Shift_Cursor_Left();
 void LCD_Shift_Cursor_Right();
+void LCD_Shift_Cursor_Up();
+void LCD_Shift_Cursor_Down();
+
 void LCD_Back();
 void LCD_Blink();
-
-char LCD_Read_Char();
-char LCD_Read_Cursor_Position(uint8_t row , uint8_t col);
-
-
-void LCD_CursorDir_Forward(); // not used
-void LCD_CursorDir_Backword(); // not used
