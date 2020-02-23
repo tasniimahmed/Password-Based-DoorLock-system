@@ -1,6 +1,22 @@
+ /********************************************************************************
+ * Module : UART
+ *
+ * File Name : uart.h
+ *
+ * Description : Header File for UART Module
+ *
+ * Author : Shreef Mohamed & Ayman Nasr 
+ *
+ * Created on: Feb 23, 2020
+ *
+ ********************************************************************************/
+ 
+
 #ifndef UART_H_
 #define UART_H_
 
+
+ 
 #ifndef F_CPU
 #define F_CPU 1000000UL
 #endif

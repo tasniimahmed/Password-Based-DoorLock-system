@@ -1,3 +1,16 @@
+ /********************************************************************************
+ * Module : UART
+ *
+ * File Name : uart.c
+ *
+ * Description : Source File for UART Module
+ *
+ * Author : Shreef Mohamed & Ayman Nasr 
+ *
+ * Created on: Feb 23, 2020
+ *
+ ********************************************************************************/
+ 
 #include "uart.h" 
 
 
