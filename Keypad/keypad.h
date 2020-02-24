@@ -10,7 +10,7 @@
  *
  *******************************************************************************/
 #include "stdint.h"
-#include "tm4c123gh6pm.h"
+#include "../tm4c123gh6pm.h"
 #ifndef KEYPAD_H_
 #define KEYPAD_H_
 

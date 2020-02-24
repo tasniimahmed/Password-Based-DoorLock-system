@@ -1,14 +1,21 @@
 #include <stdint.h>
 #include "LCD/lcd.h"
+#include "Keypad/keypad.h"
 #include "tm4c123gh6pm.h"
 
 void test_LCD();
 int main()
-{
-	while(1){			}
+{  
+	  
+	keypad_Init();
+	LCD_Init();
+	while(1){
+		char x=KeyPad_getPressedKey();
+		
+			LCD_Write_Char(x);
+		delay_m(2000);
+	}
 }
-
-
 
 void test_LCD()
 {

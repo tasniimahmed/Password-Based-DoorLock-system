@@ -398,20 +398,20 @@
               <FilePath>.\main.c</FilePath>
             </File>
             <File>
-              <FileName>uart.c</FileName>
+              <FileName>keypad.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\UART\uart.c</FilePath>
+              <FilePath>.\Keypad\keypad.c</FilePath>
+            </File>
+            <File>
+              <FileName>keypad.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Keypad\keypad.h</FilePath>
             </File>
           </Files>
         </Group>
         <Group>
           <GroupName>inc</GroupName>
           <Files>
-            <File>
-              <FileName>uart.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\UART\uart.h</FilePath>
-            </File>
             <File>
               <FileName>std_types.h</FileName>
               <FileType>5</FileType>
