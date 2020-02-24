@@ -1,15 +1,47 @@
 #include <stdint.h>
 #include "LCD/lcd.h"
 #include "tm4c123gh6pm.h"
+#include "UART/uart.h" 
 
+/*************************** FUNCTION DECLRATIONS *************************/ 
 void test_LCD();
+void UART_Config(); 
+
+/************************** HANDLE STRUCTS ********************************/ 
+UART_HandleTypedef huart ; 
+
+
+/************************** GLOBAL VARIABLES *******************************/
+
+/************************** MAIN FUNCTION ************************************/
 int main()
 {
-	while(1){			}
+	/* LOCAL VARIABLES */ 
+	uint8_t mesg[10] = "HELLO\n\r" ; 
+	/*CALL INITS FUNCTIONS*/ 
+	UART4_init(&huart); 
+	/* START OF WHILE LOOP*/ 
+	while(1)
+	{
+		UART4_trasnmitString(mesg);
+		delay_m(1000);
+	}
 }
 
 
 
+/*************************** FUNCTION DEFINITIONS *************************/ 
+void UART_Config()
+{
+
+	huart.BaudRate = 9600 ;
+	huart.FIFO = FIFO_ENABLE ; 
+	huart.HighSpeed = HIGH_SPEED_DISABLE ; 
+	huart.ParityEnable= PARITY_DISABLE ; 
+	huart.StopBits = UART_STOPBITS_1; 
+	huart.WordLength= UART_WORDLENGTH_8B ; 
+	huart.TransmitEnable= TRANSMIT_ENABLE ;
+}
 void test_LCD()
 {
 		LCD_Init();

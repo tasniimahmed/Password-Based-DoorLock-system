@@ -18,10 +18,11 @@
 
  
 #ifndef F_CPU
-#define F_CPU 1000000UL
+#define F_CPU 50000000UL
 #endif
 
 /****************************includes***************************/
+#include <stdint.h>
 #include "../std_types.h"
 #include "../tm4c123gh6pm.h"
 
@@ -91,14 +92,21 @@ typedef struct
 	UART_ReceiveEnable ReceiveEnable; 
 	UART_TransmitEnable TransmitEnable ; 
 	
-}UART0_HandleTypedef;
+}UART_HandleTypedef;
 
 
 /*****************************FUNCTION DECLARATIONS*************************************/ 
-void UART0_init(UART0_HandleTypedef *const uartConfig);
+void UART0_init(UART_HandleTypedef *const uartConfig);
 void UART0_trasnmitChar (uint8_t data);
 uint8_t UART0_receiveChar (void); 
 void UART0_trasnmitString (uint8_t *pdata);
 void UART0_receiveString (uint8_t *pdata);
-void UART0_MSPInit();
+void UART0_MSPInit(void);
+
+void UART4_init(UART_HandleTypedef *const uartConfig);
+void UART4_trasnmitChar (uint8_t data);
+uint8_t UART4_receiveChar (void); 
+void UART4_trasnmitString (uint8_t *pdata);
+void UART4_receiveString (uint8_t *pdata);
+void UART4_MSPInit(void);
 #endif

@@ -413,14 +413,14 @@
               <FilePath>.\UART\uart.h</FilePath>
             </File>
             <File>
-              <FileName>std_types.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\std_types.h</FilePath>
-            </File>
-            <File>
               <FileName>tm4c123gh6pm.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\tm4c123gh6pm.h</FilePath>
+            </File>
+            <File>
+              <FileName>std_types.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\std_types.h</FilePath>
             </File>
           </Files>
         </Group>
