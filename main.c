@@ -7,7 +7,7 @@
 /*************************** FUNCTION DECLRATIONS *************************/ 
 void test_LCD();
 void UART_Config(); 
-
+void test_LCD();
 /************************** HANDLE STRUCTS ********************************/ 
 UART_HandleTypedef huart ; 
 
@@ -15,20 +15,27 @@ UART_HandleTypedef huart ;
 /************************** GLOBAL VARIABLES *******************************/
 
 /************************** MAIN FUNCTION ************************************/
+
 int main()
-{
+{  
 	/* LOCAL VARIABLES */ 
 	uint8_t mesg[10] = "HELLO\n\r" ; 
-	/*CALL INITS FUNCTIONS*/ 
-	UART4_init(&huart); 
+	/* CALL Config FUNCTIONS */
+	UART_Config();
+	/* CALL INITS FUNCTIONS   */
+	UART_Config();
+	UART4_init(&huart);
+	keypad_Init();
+	LCD_Init();
 	/* START OF WHILE LOOP*/ 
 	while(1)
 	{
 		UART4_trasnmitString(mesg);
-		delay_m(1000);
+		char x=KeyPad_getPressedKey();
+		LCD_Write_Char(x);
+		delay_m(2000);
 	}
 }
-
 
 
 /*************************** FUNCTION DEFINITIONS *************************/ 
@@ -42,18 +49,6 @@ void UART_Config()
 	huart.StopBits = UART_STOPBITS_1; 
 	huart.WordLength= UART_WORDLENGTH_8B ; 
 	huart.TransmitEnable= TRANSMIT_ENABLE ;
-}
-
-{  
-	  
-	keypad_Init();
-	LCD_Init();
-	while(1){
-		char x=KeyPad_getPressedKey();
-		
-			LCD_Write_Char(x);
-		delay_m(2000);
-	}
 }
 
 void test_LCD()

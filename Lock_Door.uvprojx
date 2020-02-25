@@ -407,29 +407,30 @@
               <FileType>5</FileType>
               <FilePath>.\Keypad\keypad.h</FilePath>
             </File>
+            <File>
+              <FileName>uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\UART\uart.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
           <GroupName>inc</GroupName>
           <Files>
             <File>
-<<<<<<< HEAD
-              <FileName>uart.h</FileName>
+              <FileName>std_types.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\UART\uart.h</FilePath>
+              <FilePath>.\std_types.h</FilePath>
             </File>
             <File>
               <FileName>tm4c123gh6pm.h</FileName>
-=======
-              <FileName>std_types.h</FileName>
->>>>>>> 82c6988ec16411ed73866d4046ee96af79f50a74
               <FileType>5</FileType>
               <FilePath>.\tm4c123gh6pm.h</FilePath>
             </File>
             <File>
-              <FileName>std_types.h</FileName>
+              <FileName>uart.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\std_types.h</FilePath>
+              <FilePath>.\UART\uart.h</FilePath>
             </File>
           </Files>
         </Group>

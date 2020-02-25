@@ -296,8 +296,8 @@ void UART4_init(UART_HandleTypedef *const uartConfig)
     }
    
 	
-	/* 3.2 Configuration of UART4 LCRH Register */ 
-		//UART4_LCRH_R=0; 
+	/* 3.2 Configuration of UART0 LCRH Register */ 
+		//UART0_LCRH_R=0; 
 	// configure the word length of the Data check this enum >> UART_WordLength
 	switch(uartConfig->WordLength) 
 	{

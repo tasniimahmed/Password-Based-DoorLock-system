@@ -1,14 +1,3 @@
- /******************************************************************************
- *
- * Module: Common - Platform Types Abstraction
- *
- * File Name: std_types.h
- *
- * Description: types for AVR
- *
- * Author: Mohamed Tarek
- *
- *******************************************************************************/
 
 #ifndef STD_TYPES_H_
 #define STD_TYPES_H_
@@ -27,7 +16,7 @@ typedef unsigned char bool;
 #define HIGH        (1u)
 #define LOW         (0u)
 
-typedef unsigned char         uint8_t;  
+
 typedef float                 float32_t;
 typedef double                float64_t;
 
