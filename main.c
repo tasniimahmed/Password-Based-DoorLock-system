@@ -23,7 +23,6 @@ int main()
 	/* CALL Config FUNCTIONS */
 	UART_Config();
 	/* CALL INITS FUNCTIONS   */
-	UART_Config();
 	UART4_init(&huart);
 	keypad_Init();
 	LCD_Init();
