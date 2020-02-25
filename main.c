@@ -16,7 +16,6 @@ UART_HandleTypedef huart ;
 
 /************************** MAIN FUNCTION ************************************/
 int main()
-<<<<<<< HEAD
 {
 	/* LOCAL VARIABLES */ 
 	uint8_t mesg[10] = "HELLO\n\r" ; 
@@ -44,7 +43,7 @@ void UART_Config()
 	huart.WordLength= UART_WORDLENGTH_8B ; 
 	huart.TransmitEnable= TRANSMIT_ENABLE ;
 }
-=======
+
 {  
 	  
 	keypad_Init();
@@ -57,7 +56,6 @@ void UART_Config()
 	}
 }
 
->>>>>>> 82c6988ec16411ed73866d4046ee96af79f50a74
 void test_LCD()
 {
 		LCD_Init();
