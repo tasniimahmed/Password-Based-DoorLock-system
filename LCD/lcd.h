@@ -44,6 +44,7 @@ void delay_m(int n);
 void delay_u(int n);
 void LCD_Init(void);
 
+void LCD_Write_Command(char cmd);
 void LCD_Write_Char(char data);
 void LCD_Write_String(char* string);
 void LCD_Clear();

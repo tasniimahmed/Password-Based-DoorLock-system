@@ -8,6 +8,7 @@
 void test_LCD();
 void UART_Config(); 
 void test_LCD();
+void password_approved();
 /************************** HANDLE STRUCTS ********************************/ 
 UART_HandleTypedef huart ; 
 
@@ -26,6 +27,8 @@ int main()
 	UART4_init(&huart);
 	keypad_Init();
 	LCD_Init();
+	/*   CODE BEGIN 0    */
+	password_approved();
 	/* START OF WHILE LOOP*/ 
 	while(1)
 	{
@@ -89,4 +92,66 @@ void test_LCD()
 		}
 	}
 
+}
+
+void password_approved(){
+	LCD_Write_Command(0b01000000); //set CGRAM address
+	LCD_Write_Char(0);
+	LCD_Write_Char(0);
+	LCD_Write_Char(0);
+	LCD_Write_Char(1);
+	LCD_Write_Char(2);
+	LCD_Write_Char(4);
+	LCD_Write_Char(8);
+	LCD_Write_Char(48);
+	LCD_Write_Command(0b1000000); //first place in lcd
+	LCD_Write_Char(0);
+	
+	LCD_Write_Command(0b01000001); //set CGRAM address
+	LCD_Write_Char(0);
+	LCD_Write_Char(0);
+	LCD_Write_Char(0);
+	LCD_Write_Char(0);
+	LCD_Write_Char(0);
+	LCD_Write_Char(0);
+	LCD_Write_Char(0);
+	LCD_Write_Char(31);
+	LCD_Write_Command(0b1000001); //first place in lcd
+	LCD_Write_Char(1);
+	
+	LCD_Write_Command(0b01000010); //set CGRAM address
+	LCD_Write_Char(0);
+	LCD_Write_Char(0);
+	LCD_Write_Char(0);
+	LCD_Write_Char(4);
+	LCD_Write_Char(5);
+	LCD_Write_Char(4);
+	LCD_Write_Char(5);
+	LCD_Write_Char(60);
+	LCD_Write_Command(0b1000010); //first place in lcd
+	LCD_Write_Char(2);
+	
+	LCD_Write_Command(0b01000011); //set CGRAM address
+	LCD_Write_Char(0);
+	LCD_Write_Char(0);
+	LCD_Write_Char(0);
+	LCD_Write_Char(6);
+	LCD_Write_Char(177);
+	LCD_Write_Char(81);
+	LCD_Write_Char(210);
+	LCD_Write_Char(124);
+	LCD_Write_Command(0b1000011); //first place in lcd
+	LCD_Write_Char(3);
+	
+	LCD_Write_Command(0b01000100); //set CGRAM address
+	LCD_Write_Char(0);
+	LCD_Write_Char(0);
+	LCD_Write_Char(0);
+	LCD_Write_Char(18);
+	LCD_Write_Char(17);
+	LCD_Write_Char(1);
+	LCD_Write_Char(49);
+	LCD_Write_Char(2);
+	LCD_Write_Command(0b1000100); //first place in lcd
+	LCD_Write_Char(4);
 }
