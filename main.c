@@ -45,17 +45,18 @@ int main()
 	GPIO_InitialPin(&portApin2);
 	
 	GPIO_HandlingPin portDpin3;
-  portDpin3.PortBase = GPIO_PORTA_APB_BASE;
+  portDpin3.PortBase = GPIO_PORTD_APB_BASE;
 	portDpin3.AlternateFunctionSelect = 0;
 	portDpin3.AnalogModeSelect = 0;
 	portDpin3.Commit = 1;
 	portDpin3.DigitalEnable = 1;
 	portDpin3.Direction = Output;
-	portDpin3.PinNumber = 2;
+	portDpin3.PinNumber = 3;
 	portDpin3.PullDownSelect = 0;
 	portDpin3.PullUpSelect = 0;
 	portDpin3.PortControl = 0;
 	
+	GPIO_InitialPin(&portDpin3);
 	
 	/* LOCAL VARIABLES */ 
 	uint8_t mesg[10] = "HELLO\n\r" ; 
@@ -110,11 +111,14 @@ int main()
 				{
 					LCD_Clear();					
 					LCD_Write_String_Position(0,3,"INCORRECT");		
-					GPIO_PORTA_APB_DATA_PIN2 = 0x04;
+					GPIO_PORTD_APB_DATA_PIN3 = 0x08;
 					LCD_Blink();
 					LCD_Clear();
-					GPIO_PORTA_APB_DATA_PIN2 = 0x00;
-          					
+					GPIO_PORTD_APB_DATA_PIN3 = 0x00;
+					delay_m(5000);
+					GPIO_PORTD_APB_DATA_PIN3 = 0x08;
+          delay_m(5000);
+					GPIO_PORTD_APB_DATA_PIN3 = 0x00;					
 				}
 				
 				
