@@ -9,7 +9,8 @@
  * Author: Amr Mostafa
  *
  *******************************************************************************/
-#include "stdint.h"
+//#include "stdint.h"
+#include "../GPIO_Drivers/Data_Type.h"
 #include "../tm4c123gh6pm.h"
 #ifndef KEYPAD_H_
 #define KEYPAD_H_

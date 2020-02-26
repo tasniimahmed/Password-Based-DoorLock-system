@@ -1,47 +1,206 @@
-#include <stdint.h>
+//#include <stdint.h>
 #include "LCD/lcd.h"
 #include "Keypad/keypad.h"
 #include "tm4c123gh6pm.h"
-#include "UART/uart.h" 
+#include "GPIO_Drivers/GPIO.h"
+#include "GPIO_Drivers/Data_Type.h"
+//#include "UART/uart.h" 
+
 
 /*************************** FUNCTION DECLRATIONS *************************/ 
 void test_LCD();
 void UART_Config(); 
 void test_LCD();
 void password_approved();
+void Login();
+void getPassword(char * pw_arr);
+int Login_Validation(char * pw_arr , char* pw_true);
 /************************** HANDLE STRUCTS ********************************/ 
-UART_HandleTypedef huart ; 
+//UART_HandleTypedef huart ; 
 
 
 /************************** GLOBAL VARIABLES *******************************/
 
+char pw_true[4]= {'1','2','3','4'};
 /************************** MAIN FUNCTION ************************************/
 
 int main()
 {  
+	GPIO_HandlingPin portApin2;
+  portApin2.PortBase = GPIO_PORTA_APB_BASE;
+	portApin2.AlternateFunctionSelect = 0;
+	portApin2.AnalogModeSelect = 0;
+	portApin2.Commit = 1;
+	portApin2.DigitalEnable = 1;
+	portApin2.Direction = Output;
+	portApin2.Lock = 1;
+	portApin2.PinNumber = 2;
+	portApin2.PullDownSelect = 0;
+	portApin2.PullUpSelect = 0;
+	portApin2.PortControl = 0;
+	
+	
+	GPIO_InitialPin(&portApin2);
+	
+	GPIO_HandlingPin portDpin3;
+  portDpin3.PortBase = GPIO_PORTA_APB_BASE;
+	portDpin3.AlternateFunctionSelect = 0;
+	portDpin3.AnalogModeSelect = 0;
+	portDpin3.Commit = 1;
+	portDpin3.DigitalEnable = 1;
+	portDpin3.Direction = Output;
+	portDpin3.PinNumber = 2;
+	portDpin3.PullDownSelect = 0;
+	portDpin3.PullUpSelect = 0;
+	portDpin3.PortControl = 0;
+	
+	
 	/* LOCAL VARIABLES */ 
 	uint8_t mesg[10] = "HELLO\n\r" ; 
 	/* CALL Config FUNCTIONS */
-	UART_Config();
+	//UART_Config();
 	/* CALL INITS FUNCTIONS   */
-	UART4_init(&huart);
+	//UART4_init(&huart);
 	keypad_Init();
 	LCD_Init();
 	/*   CODE BEGIN 0    */
-	password_approved();
+	
+	//char pw_true[4]= {'1','2','3','4'};
+	
+	
+	/*LCD_Write_Command(0b01000000); //set CGRAM address
+	LCD_Write_Char(0);
+	LCD_Write_Char(0);
+	LCD_Write_Char(0);
+	LCD_Write_Char(4);
+	LCD_Write_Char(5);
+	LCD_Write_Char(4);
+	LCD_Write_Char(5);
+	LCD_Write_Char(60);
+	LCD_Write_Command(0b10000000); //first place in lcd
+	LCD_Write_Char(0);*/
+	//password_approved();
+	//test_LCD();
 	/* START OF WHILE LOOP*/ 
+	uint16_t flag=1;
+	char pw_arr[4];
 	while(1)
 	{
-		UART4_trasnmitString(mesg);
-		char x=KeyPad_getPressedKey();
-		LCD_Write_Char(x);
-		delay_m(2000);
+		
+		//password_approved();
+		//UART4_trasnmitString(mesg);
+//		GPIO_PORTA_APB_DATA_PIN2 = 0x04;
+		
+				LCD_Write_String("Enter Password");
+				LCD_Set_Cursor_Position(1,6);
+        getPassword(pw_arr);
+	
+				int valid = Login_Validation(pw_arr,pw_true);
+				if(valid)
+				{
+					LCD_Clear();
+					LCD_Write_String_Position(0,3,"MABROOK");
+					LCD_Blink();
+					delay_m(500);
+					Login();
+				}
+				else 
+				{
+					LCD_Clear();					
+					LCD_Write_String_Position(0,3,"INCORRECT");		
+					GPIO_PORTA_APB_DATA_PIN2 = 0x04;
+					LCD_Blink();
+					LCD_Clear();
+					GPIO_PORTA_APB_DATA_PIN2 = 0x00;
+          					
+				}
+				
+				
 	}
 }
 
 
+
+int Login_Validation(char * pw_arr , char* pw_true)
+{
+	
+	for ( uint16_t j=0; j<4; j++){
+				if(pw_arr[j] !=pw_true[j]){
+					return 0;
+				}
+		}
+	return 1;
+}
+void getPassword(char * pw_arr)
+{	
+	uint16_t i=0;
+	while(1)
+	{			
+			char x=KeyPad_getPressedKey();
+			if (x == '+' && i == 4 )
+			{
+				return;
+			}
+			
+			else if (x =='.'&& i > 0 )
+			{
+				LCD_Shift_Cursor_Left();
+				i--;
+			}
+			else if ( x== '=' &&  i < 4 )
+			{
+				LCD_Shift_Cursor_Right();
+				i ++;
+			}
+			else if (x=='/' && i > 0 &&  i <= 4)
+			{
+				LCD_Back(); 
+				--i ;
+			}
+
+			else if( ( x >= '0' && x <= '9' ) && i < 4  ) 
+			{
+				LCD_Write_Char(x);
+				pw_arr[i]=x;
+				i++; 
+			}
+
+			delay_m(1000);
+	}
+}
+
+void Login()
+{
+		LCD_Clear();
+		LCD_Write_String_Position(0,0,"1-Open");
+		LCD_Write_String_Position(0,8,"2-Close");
+		LCD_Write_String_Position(1,0,"3-Reset Password");
+	
+		while(1)
+		{
+			char c = KeyPad_getPressedKey();
+			if (c =='1'){
+				GPIO_PORTA_APB_DATA_PIN2 = 0x04;
+			}
+			else if ( c == '2')
+			{
+				GPIO_PORTA_APB_DATA_PIN2 = 0x00;				
+			}
+			else if(c == '3')
+			{
+					LCD_Clear();
+					LCD_Write_String("NewPassword:");
+					LCD_Set_Cursor_Position(1,6);
+					getPassword(pw_true);
+					LCD_Clear();
+					return;
+					
+			}
+
+		}
+}
 /*************************** FUNCTION DEFINITIONS *************************/ 
-void UART_Config()
+/*void UART_Config()
 {
 
 	huart.BaudRate = 9600 ;
@@ -51,7 +210,7 @@ void UART_Config()
 	huart.StopBits = UART_STOPBITS_1; 
 	huart.WordLength= UART_WORDLENGTH_8B ; 
 	huart.TransmitEnable= TRANSMIT_ENABLE ;
-}
+}*/
 
 void test_LCD()
 {
@@ -104,7 +263,7 @@ void password_approved(){
 	LCD_Write_Char(4);
 	LCD_Write_Char(8);
 	LCD_Write_Char(48);
-	LCD_Write_Command(0b1000000); //first place in lcd
+	LCD_Write_Command(0b10000000); //first place in lcd
 	LCD_Write_Char(0);
 	
 	LCD_Write_Command(0b01000001); //set CGRAM address

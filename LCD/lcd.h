@@ -1,4 +1,5 @@
-#include <stdint.h>
+//#include <stdint.h>
+#include "../GPIO_Drivers/Data_Type.h"
 #include "../tm4c123gh6pm.h"
 #include <time.h> 
 

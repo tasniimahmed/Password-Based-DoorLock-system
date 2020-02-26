@@ -412,6 +412,31 @@
               <FileType>1</FileType>
               <FilePath>.\UART\uart.c</FilePath>
             </File>
+            <File>
+              <FileName>Data_Type.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\GPIO_Drivers\Data_Type.h</FilePath>
+            </File>
+            <File>
+              <FileName>GPIO.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\GPIO_Drivers\GPIO.h</FilePath>
+            </File>
+            <File>
+              <FileName>Tiva_C_Ports.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\GPIO_Drivers\Tiva_C_Ports.h</FilePath>
+            </File>
+            <File>
+              <FileName>TivaC_IO.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\GPIO_Drivers\TivaC_IO.h</FilePath>
+            </File>
+            <File>
+              <FileName>GPIO.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\GPIO_Drivers\GPIO.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

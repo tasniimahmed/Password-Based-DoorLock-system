@@ -96,6 +96,7 @@ void LCD_Write_String(char* string)
 	{		
 		LCD_Write_Char(string[i] );
 		i++ ;
+		delay_m(100);
 	}	
 }
 void LCD_Clear()
@@ -104,6 +105,7 @@ void LCD_Clear()
 	LCD_Delay(); // for the problem of missing first charachter 
 	LCD_Write_Command(RETURN_HOME); // cursor position = top left corner (first position)
 	LCD_Delay(); 
+	LCD_Cursor = 0x80;
 }
 void LCD_Set_Cursor_Position(uint8_t row, uint8_t col )
 {
