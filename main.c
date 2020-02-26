@@ -5,7 +5,7 @@
 #include "GPIO_Drivers/GPIO.h"
 #include "GPIO_Drivers/Data_Type.h"
 //#include "UART/uart.h" 
-
+#define PASSWORD_SIZE 4
 
 /*************************** FUNCTION DECLRATIONS *************************/ 
 void test_LCD();
@@ -15,13 +15,15 @@ void password_approved();
 void Login();
 void getPassword(char * pw_arr);
 int Login_Validation(char * pw_arr , char* pw_true);
+void EEPROM_FillPassword(char* password);
+
 /************************** HANDLE STRUCTS ********************************/ 
 //UART_HandleTypedef huart ; 
 
 
 /************************** GLOBAL VARIABLES *******************************/
 
-char pw_true[4]= {'1','2','3','4'};
+char pw_true[PASSWORD_SIZE]= {'1','2','3','4'};
 /************************** MAIN FUNCTION ************************************/
 
 int main()
@@ -124,8 +126,8 @@ int main()
 int Login_Validation(char * pw_arr , char* pw_true)
 {
 	
-	for ( uint16_t j=0; j<4; j++){
-				if(pw_arr[j] !=pw_true[j]){
+	for ( uint16_t j=0; j<PASSWORD_SIZE; j++){
+				if(pw_arr[j] != pw_true[j]){
 					return 0;
 				}
 		}
@@ -134,12 +136,22 @@ int Login_Validation(char * pw_arr , char* pw_true)
 void getPassword(char * pw_arr)
 {	
 	uint16_t i=0;
+	char space_counter = 0; 
 	while(1)
 	{			
 			char x=KeyPad_getPressedKey();
-			if (x == '+' && i == 4 )
+			if (x == '+' && i == PASSWORD_SIZE )
 			{
-				return;
+				if(space_counter < PASSWORD_SIZE )
+				{
+					LCD_Clear();
+					LCD_Write_String("Invalid Password");
+					LCD_Set_Cursor_Position(1,6);					
+					i=0;
+					space_counter = 0;
+				}
+				else
+					return;
 			}
 			
 			else if (x =='.'&& i > 0 )
@@ -147,22 +159,24 @@ void getPassword(char * pw_arr)
 				LCD_Shift_Cursor_Left();
 				i--;
 			}
-			else if ( x== '=' &&  i < 4 )
+			else if ( x== '=' &&  i < PASSWORD_SIZE )
 			{
 				LCD_Shift_Cursor_Right();
 				i ++;
 			}
-			else if (x=='/' && i > 0 &&  i <= 4)
+			else if (x=='/' && i > 0 &&  i <= PASSWORD_SIZE)
 			{
 				LCD_Back(); 
 				--i ;
+				space_counter --;
 			}
 
-			else if( ( x >= '0' && x <= '9' ) && i < 4  ) 
+			else if( ( x >= '0' && x <= '9' ) && i < PASSWORD_SIZE  ) 
 			{
 				LCD_Write_Char(x);
 				pw_arr[i]=x;
 				i++; 
+				space_counter++;
 			}
 
 			delay_m(1000);
@@ -188,16 +202,51 @@ void Login()
 			}
 			else if(c == '3')
 			{
+					char password1[PASSWORD_SIZE] , password2[PASSWORD_SIZE];
+					
+					// get the password first time ... clear, write in the first line , set the cursor to the password position , get the password
 					LCD_Clear();
 					LCD_Write_String("NewPassword:");
 					LCD_Set_Cursor_Position(1,6);
-					getPassword(pw_true);
+					getPassword(password1);
+				
+					// re enter the password
 					LCD_Clear();
-					return;
-					
+					LCD_Write_String("ReEnter Password");
+					LCD_Set_Cursor_Position(1,6);
+					getPassword(password2);
+
+					if( Login_Validation(password1,password2) )
+					{
+								EEPROM_FillPassword(password1); // because password1 is ray2 
+								LCD_Clear();
+								LCD_Write_String("Password Changed!");
+								LCD_Blink();
+								LCD_Clear();
+								return;
+					}
+					else
+					{
+								LCD_Clear();
+								LCD_Write_String("Passwords is not Matched");
+								LCD_Blink();
+								LCD_Clear();
+								LCD_Write_String_Position(0,0,"1-Open");
+								LCD_Write_String_Position(0,8,"2-Close");
+								LCD_Write_String_Position(1,0,"3-Reset Password");								
+					}
+									
 			}
 
 		}
+}
+
+void EEPROM_FillPassword(char* password)
+{
+	for(int i =0 ; i < PASSWORD_SIZE ; i++)
+	{
+		pw_true[i] = password[i];
+	}
 }
 /*************************** FUNCTION DEFINITIONS *************************/ 
 /*void UART_Config()
