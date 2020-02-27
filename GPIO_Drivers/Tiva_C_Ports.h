@@ -688,7 +688,49 @@
 
 
 
-#define GPIO_RCGC (*((volatile uint32_t *)0x400FE608))  //General-Purpose Input/Output Run Mode Clock Gating Control
-#define GPIO_PR   (*((volatile uint32_t *)0x400FEA08))  //pose Input/Output Peripheral Ready
+#define GPIO_RCGC     (*((volatile uint32_t *)0x400FE608))  //General-Purpose Input/Output Run Mode Clock Gating Control
+#define GPIO_PR       (*((volatile uint32_t *)0x400FEA08))  //General-Purpose Input/Output Peripheral Ready
+#define EEPROM_RCGC   (*((volatile uint32_t *)0x400FE658))  //EEPROM Run Mode Clock Gating Control page 356
+#define SREEPROM      (*((volatile uint32_t *)0x400FE558))  //EEPROM Software Reset page 334
+	
+
+
+#define EEPROM        ((volatile uint32_t *)0x400AF000)     //EEPROM Register Descriptions page 55
+#define EESIZE        (*((volatile uint32_t *)0x400AF000))  //EEPROM Size Information page 560
+#define EEBLOCK       (*((volatile uint32_t *)0x400AF004))  //EEPROM Current Block page 561
+#define EEOFFSET      (*((volatile uint32_t *)0x400AF008))  //EEPROM Current Offset page 562
+#define EERDWR        (*((volatile uint32_t *)0x400AF010))  //EEPROM Read-Write page 563
+#define EERDWRINC     (*((volatile uint32_t *)0x400AF014))  //EEPROM Read-Write with Increment page 564
+#define EEDONE        (*((volatile uint32_t *)0x400AF018))  //EEPROM Done Status page 565
+#define EESUPP        (*((volatile uint32_t *)0x400AF01C))  //EEPROM Support Control and Status page 567
+#define EEUNLOCK      (*((volatile uint32_t *)0x400AF020))  //EEPROM Unlock page 569
+#define EEPROT        (*((volatile uint32_t *)0x400AF030))  //EEPROM Protection page 570
+#define EEPASS0       (*((volatile uint32_t *)0x400AF034))  //EEPROM Password page 572
+#define EEPASS1       (*((volatile uint32_t *)0x400AF038))  //EEPROM Password page 572
+#define EEPASS2       (*((volatile uint32_t *)0x400AF03C))  //EEPROM Password page 572
+#define EEINT         (*((volatile uint32_t *)0x400AF040))  //EEPROM Interrupt page 573
+#define EEHIDE        (*((volatile uint32_t *)0x400AF050))  //EEPROM Block Hide page 574
+#define EEDBGME       (*((volatile uint32_t *)0x400AF080))  //EEPROM Debug Mass Erase pg 575
+#define EEPROMPP      (*((volatile uint32_t *)0x400AFFC0))  //EEPROM Peripheral Properties pg 576
+
+//*****************************************************************************
+//
+// The following are defines for the bit fields in the EEPROM_EEDONE register.
+//
+//*****************************************************************************
+#define EEPROM_EEDONE_WRBUSY    0x00000020  // Write Busy
+#define EEPROM_EEDONE_NOPERM    0x00000010  // Write Without Permission
+#define EEPROM_EEDONE_WKCOPY    0x00000008  // Working on a Copy
+#define EEPROM_EEDONE_WKERASE   0x00000004  // Working on an Erase
+#define EEPROM_EEDONE_WORKING   0x00000001  // EEPROM Working
+
+//*****************************************************************************
+//
+// The following are defines for the bit fields in the EEPROM_EESUPP register.
+//
+//*****************************************************************************
+#define EEPROM_EESUPP_PRETRY    0x00000008  // Programming Must Be Retried
+#define EEPROM_EESUPP_ERETRY    0x00000004  // Erase Must Be Retried
+
 
 #endif

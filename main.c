@@ -3,6 +3,7 @@
 #include "Keypad/keypad.h"
 #include "tm4c123gh6pm.h"
 #include "GPIO_Drivers/GPIO.h"
+#include "GPIO_Drivers/EEPROM.h"
 #include "GPIO_Drivers/Data_Type.h"
 //#include "UART/uart.h" 
 #define PASSWORD_SIZE 4
@@ -14,8 +15,11 @@ void test_LCD();
 void password_approved();
 void Login();
 void getPassword(char * pw_arr);
-int Login_Validation(char * pw_arr , char* pw_true);
+bool Login_Validation(char * pw_arr , char* pw_true);
 void EEPROM_FillPassword(char* password);
+void uint32_tToChar(char*,uint8_t,uint32_t);
+uint32_t Pow(uint32_t,uint32_t);
+int32_t charToint(char * arr);
 
 /************************** HANDLE STRUCTS ********************************/ 
 //UART_HandleTypedef huart ; 
@@ -23,7 +27,7 @@ void EEPROM_FillPassword(char* password);
 
 /************************** GLOBAL VARIABLES *******************************/
 
-char pw_true[PASSWORD_SIZE]= {'1','2','3','4'};
+char pw_true[PASSWORD_SIZE];
 /************************** MAIN FUNCTION ************************************/
 
 int main()
@@ -58,47 +62,21 @@ int main()
 	
 	GPIO_InitialPin(&portDpin3);
 	
-	/* LOCAL VARIABLES */ 
-	uint8_t mesg[10] = "HELLO\n\r" ; 
-	/* CALL Config FUNCTIONS */
-	//UART_Config();
-	/* CALL INITS FUNCTIONS   */
-	//UART4_init(&huart);
 	keypad_Init();
 	LCD_Init();
-	/*   CODE BEGIN 0    */
-	
-	//char pw_true[4]= {'1','2','3','4'};
-	
-	
-	/*LCD_Write_Command(0b01000000); //set CGRAM address
-	LCD_Write_Char(0);
-	LCD_Write_Char(0);
-	LCD_Write_Char(0);
-	LCD_Write_Char(4);
-	LCD_Write_Char(5);
-	LCD_Write_Char(4);
-	LCD_Write_Char(5);
-	LCD_Write_Char(60);
-	LCD_Write_Command(0b10000000); //first place in lcd
-	LCD_Write_Char(0);*/
-	//password_approved();
-	//test_LCD();
-	/* START OF WHILE LOOP*/ 
+	EEPROM_Init(0);
+	EEPROM_WriteData(0,0,1234);
 	uint16_t flag=1;
 	char pw_arr[4];
 	while(1)
 	{
-		
-		//password_approved();
-		//UART4_trasnmitString(mesg);
-//		GPIO_PORTA_APB_DATA_PIN2 = 0x04;
-		
 				LCD_Write_String("Enter Password");
 				LCD_Set_Cursor_Position(1,6);
         getPassword(pw_arr);
-	
-				int valid = Login_Validation(pw_arr,pw_true);
+			  int32_t data = EEPROM_ReadData(0,0);
+				uint32_tToChar(pw_true,4,data);
+				//uint32_tToChar(pw_true,4,load_pass);
+				bool valid = Login_Validation(pw_arr,pw_true);
 				if(valid)
 				{
 					LCD_Clear();
@@ -127,11 +105,12 @@ int main()
 
 
 
-int Login_Validation(char * pw_arr , char* pw_true)
+bool Login_Validation(char * pw_arr , char* pw_true)
 {
 	
-	for ( uint16_t j=0; j<PASSWORD_SIZE; j++){
+	for ( uint8_t j=0; j<PASSWORD_SIZE; j++){
 				if(pw_arr[j] != pw_true[j]){
+					GPIO_PORTD_APB_DATA_PIN3 = 0x08;
 					return 0;
 				}
 		}
@@ -251,6 +230,7 @@ void EEPROM_FillPassword(char* password)
 	{
 		pw_true[i] = password[i];
 	}
+	EEPROM_WriteData(0,0,charToint(password) );
 }
 /*************************** FUNCTION DEFINITIONS *************************/ 
 /*void UART_Config()
@@ -265,105 +245,36 @@ void EEPROM_FillPassword(char* password)
 	huart.TransmitEnable= TRANSMIT_ENABLE ;
 }*/
 
-void test_LCD()
+
+
+void uint32_tToChar(char* arr,uint8_t size,uint32_t data)
 {
-		LCD_Init();
-
-	char * x0 = "Ray2" ;
-	char * x1 = "Amr" ;
-	char * x2 = "Door-Lock" ;
-	char * x3 = "Tasnim" ;
-	
-	LCD_Set_Cursor_Position(0,3);
-	delay_m(1000);
-	LCD_Write_String(x0);
-	delay_m(1000);
-	for(int i = 0 ; i<3 ; i++)
-	{LCD_Shift_Cursor_Right(); delay_m(1000); }
-	for(int i = 0 ; i<2 ; i++)
-	{LCD_Shift_Cursor_Left(); delay_m(1000); }
-	delay_m(1000);
-	LCD_Shift_Cursor_Down();
-	delay_m(1000);
-	LCD_Write_String("ABC");
-	delay_m(1000);
-	LCD_Back(); 	delay_m(1000); LCD_Back();
-	delay_m(1000);
-	LCD_Shift_Cursor_Up(); 	delay_m(1000);
-	LCD_Blink();
-	LCD_Set_Cursor_Position(0,13);
-	delay_m(1000);
-	LCD_Write_String(x2);
-		
-	for (int i = 0 ; i < 2 ; i ++ )
+	for(uint8_t i = 0; i<size;i=i+1)
 	{
-		for(int j = 0 ; j < 14; j ++ )
-		{
-				delay_m(1000);
-				LCD_Write_Char_Position(i,j,' ');
-		}
+		arr[i] = (data/(Pow((size-i-1),10))) + '0';
+		data = data%(Pow((size-i-1),10));
 	}
-
 }
 
-void password_approved(){
-	LCD_Write_Command(0b01000000); //set CGRAM address
-	LCD_Write_Char(0);
-	LCD_Write_Char(0);
-	LCD_Write_Char(0);
-	LCD_Write_Char(1);
-	LCD_Write_Char(2);
-	LCD_Write_Char(4);
-	LCD_Write_Char(8);
-	LCD_Write_Char(48);
-	LCD_Write_Command(0b10000000); //first place in lcd
-	LCD_Write_Char(0);
+uint32_t Pow(uint32_t power,uint32_t base)
+{
+	uint32_t x = 1;
+	for(uint32_t i = 0;i<power;i=i+1)
+	{
+		x = x * base;
+	}
+	return x;
+}
+
+int32_t charToint(char * arr)
+{
+	int32_t data = 0 ;
 	
-	LCD_Write_Command(0b01000001); //set CGRAM address
-	LCD_Write_Char(0);
-	LCD_Write_Char(0);
-	LCD_Write_Char(0);
-	LCD_Write_Char(0);
-	LCD_Write_Char(0);
-	LCD_Write_Char(0);
-	LCD_Write_Char(0);
-	LCD_Write_Char(31);
-	LCD_Write_Command(0b1000001); //first place in lcd
-	LCD_Write_Char(1);
+	for(uint8_t i =0;i<PASSWORD_SIZE;i++)
+	{
+		data += (arr[i] - '0')*(Pow((PASSWORD_SIZE-i-1),10));
+	}
+
+	return data;
 	
-	LCD_Write_Command(0b01000010); //set CGRAM address
-	LCD_Write_Char(0);
-	LCD_Write_Char(0);
-	LCD_Write_Char(0);
-	LCD_Write_Char(4);
-	LCD_Write_Char(5);
-	LCD_Write_Char(4);
-	LCD_Write_Char(5);
-	LCD_Write_Char(60);
-	LCD_Write_Command(0b1000010); //first place in lcd
-	LCD_Write_Char(2);
-	
-	LCD_Write_Command(0b01000011); //set CGRAM address
-	LCD_Write_Char(0);
-	LCD_Write_Char(0);
-	LCD_Write_Char(0);
-	LCD_Write_Char(6);
-	LCD_Write_Char(177);
-	LCD_Write_Char(81);
-	LCD_Write_Char(210);
-	LCD_Write_Char(124);
-	LCD_Write_Command(0b1000011); //first place in lcd
-	LCD_Write_Char(3);
-	
-	LCD_Write_Command(0b01000100); //set CGRAM address
-	LCD_Write_Char(0);
-	LCD_Write_Char(0);
-	LCD_Write_Char(0);
-	LCD_Write_Char(18);
-	LCD_Write_Char(17);
-	LCD_Write_Char(1);
-	LCD_Write_Char(49);
-	LCD_Write_Char(2);
-	LCD_Write_Command(0b1000100); //first place in lcd
-	LCD_Write_Char(4);
 }
