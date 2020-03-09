@@ -18,6 +18,8 @@ void getPassword(char * pw_arr);
 bool Login_Validation(char * pw_arr , char* pw_true);
 void EEPROM_FillPassword(char* password);
 void uint32_tToChar(char*,uint8_t,uint32_t);
+void buzzer();
+void LCD_correct();
 uint32_t Pow(uint32_t,uint32_t);
 int32_t charToint(char * arr);
 
@@ -44,7 +46,6 @@ int main()
 	portApin2.PullDownSelect = 0;
 	portApin2.PullUpSelect = 0;
 	portApin2.PortControl = 0;
-	
 	
 	GPIO_InitialPin(&portApin2);
 	
@@ -80,7 +81,8 @@ int main()
 				if(valid)
 				{
 					LCD_Clear();
-					LCD_Write_String_Position(0,3,"MABROOK");
+					LCD_Write_String_Position(0,3,"CORRECT");
+					LCD_correct();
 					LCD_Blink();
 					delay_m(500);
 					Login();
@@ -88,15 +90,10 @@ int main()
 				else 
 				{
 					LCD_Clear();					
-					LCD_Write_String_Position(0,3,"INCORRECT");		
-					GPIO_PORTD_APB_DATA_PIN3 = 0x08;
+					LCD_Write_String_Position(0,3,"INCORRECT");
+					buzzer();
 					LCD_Blink();
-					LCD_Clear();
-					GPIO_PORTD_APB_DATA_PIN3 = 0x00;
-					delay_m(5000);
-					GPIO_PORTD_APB_DATA_PIN3 = 0x08;
-          delay_m(5000);
-					GPIO_PORTD_APB_DATA_PIN3 = 0x00;					
+					LCD_Clear();					
 				}
 				
 				
@@ -104,6 +101,8 @@ int main()
 }
 
 
+
+/*************************** FUNCTION DEFINITIONS *************************/ 
 
 bool Login_Validation(char * pw_arr , char* pw_true)
 {
@@ -116,6 +115,7 @@ bool Login_Validation(char * pw_arr , char* pw_true)
 		}
 	return 1;
 }
+
 void getPassword(char * pw_arr)
 {	
 	uint16_t i=0;
@@ -212,6 +212,7 @@ void Login()
 					{
 								LCD_Clear();
 								LCD_Write_String("Passwords is not Matched");
+								buzzer();
 								LCD_Blink();
 								LCD_Clear();
 								LCD_Write_String_Position(0,0,"1-Open");
@@ -232,7 +233,7 @@ void EEPROM_FillPassword(char* password)
 	}
 	EEPROM_WriteData(0,0,charToint(password) );
 }
-/*************************** FUNCTION DEFINITIONS *************************/ 
+
 /*void UART_Config()
 {
 
@@ -245,7 +246,35 @@ void EEPROM_FillPassword(char* password)
 	huart.TransmitEnable= TRANSMIT_ENABLE ;
 }*/
 
+void buzzer()
+{
+	GPIO_PORTD_APB_DATA_PIN3 = 0x08;
+	delay_m(400);
+	GPIO_PORTD_APB_DATA_PIN3 = 0x00;
+	delay_m(500);
+	GPIO_PORTD_APB_DATA_PIN3 = 0x08;
+  delay_m(700);
+	GPIO_PORTD_APB_DATA_PIN3 = 0x00;
+	delay_m(500);
+	GPIO_PORTD_APB_DATA_PIN3 = 0x08;
+  delay_m(700);
+	GPIO_PORTD_APB_DATA_PIN3 = 0x00;
+}
 
+void LCD_correct()
+{
+	LCD_Write_Command(0b01000000);
+	LCD_Write_Char(0);
+	LCD_Write_Char(0);
+	LCD_Write_Char(0);
+	LCD_Write_Char(0);
+	LCD_Write_Char(1);
+	LCD_Write_Char(2);
+	LCD_Write_Char(20);
+	LCD_Write_Char(8);
+	LCD_Write_Command(0b10000000);
+	LCD_Write_Char(0);
+}
 
 void uint32_tToChar(char* arr,uint8_t size,uint32_t data)
 {
