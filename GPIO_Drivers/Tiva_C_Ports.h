@@ -733,4 +733,13 @@
 #define EEPROM_EESUPP_ERETRY    0x00000004  // Erase Must Be Retried
 
 
+//*****************************************************************************
+// ********************** Timer ***********************************************
+//*****************************************************************************
+
+#define INTERNAL_TIMER_BASE          ((volatile uint32_t *)0xE000E000)          // see page 134
+#define STCTRL                       (*((volatile uint32_t *)0xE000E010))       // SysTick Control and Status Register
+#define STRELOAD										 (*((volatile uint32_t *)0xE000E014))       // SysTick Reload Value Register
+#define STCURRENT                    (*((volatile uint32_t *)0xE000E018))       // SysTick Current Value Register
+
 #endif

@@ -6,6 +6,7 @@
 #include "GPIO_Drivers/EEPROM.h"
 #include "GPIO_Drivers/Data_Type.h"
 //#include "UART/uart.h" 
+#include "Timer.h"
 #define PASSWORD_SIZE 4
 
 /*************************** FUNCTION DECLRATIONS *************************/ 
@@ -33,6 +34,26 @@ char pw_true[PASSWORD_SIZE];
 /************************** MAIN FUNCTION ************************************/
 
 int main()
+{
+	TimerInit();
+	SYSCTL_RCGCGPIO_R |= 0x20;
+	while( (SYSCTL_RCGCGPIO_R & 0x20) == 0 );
+	GPIO_PORTF_DIR_R |= 0x0E;
+	GPIO_PORTF_DEN_R |= 0x0E;
+	Set_bit(GPIO_PORTF_DATA_R,1);
+	
+	while(1) {
+		//delay_s(5);
+		//StopTimer();
+		
+		RELOAD = 0xffffff;
+		StartTimer();
+		WaitTimerTimeout();
+		Toggle_bit(GPIO_PORTF_DATA_R,1) ;
+	}	
+}
+
+int main1()
 {  
 	GPIO_HandlingPin portApin2;
   portApin2.PortBase = GPIO_PORTA_APB_BASE;
