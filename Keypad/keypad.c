@@ -8,14 +8,14 @@ uint8_t symbol[N_row][N_col] = {{ '1', '2',  '3', '+'},
 
 void keypad_Init(void)
 {
-  SYSCTL_RCGCGPIO_R |= 0x14;            //enable clc for port C & D  
+  SYSCTL_RCGCGPIO_R |= 0x18;            //enable clc for port E & D  
   while ((SYSCTL_RCGCGPIO_R&0x14)==0);  //wait for clock to be enabled
-  GPIO_PORTC_CR_R  |= 0xF0;             //allow changes to all the bits in port C
+  GPIO_PORTD_CR_R  |= 0xF0;             //allow changes to all the bits in port D
   GPIO_PORTE_CR_R  |= 0x1E;             //allow changes to all the bits in port E
-  GPIO_PORTC_DIR_R |= 0xF0;             //set directions cols are o/ps
+  GPIO_PORTD_DIR_R |= 0xF0;             //set directions cols are o/ps
   GPIO_PORTE_DIR_R |= 0x00;             //set directions raws are i/ps
   GPIO_PORTE_PDR_R |= 0x1E;             //pull down resistor on Raws
-  GPIO_PORTC_DEN_R |= 0xF0;             //digital enable pins in port C
+  GPIO_PORTD_DEN_R |= 0xF0;             //digital enable pins in port D
   GPIO_PORTE_DEN_R |= 0x1E;             //digital enable pins in port E
 }
 
