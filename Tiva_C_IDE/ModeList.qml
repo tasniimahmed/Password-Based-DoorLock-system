@@ -16,4 +16,10 @@ ListModel {
     ListElement {
         name: "Interrupt"
     }
+    ListElement {
+        name: "DMA"
+    }
+    ListElement {
+        name: "SPI"
+    }
 }
