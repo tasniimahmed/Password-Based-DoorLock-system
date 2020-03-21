@@ -3,5 +3,7 @@
         <file>main.qml</file>
         <file>ModeList.qml</file>
         <file>texas_logo.png</file>
+        <file>zoom_in.png</file>
+        <file>zoom_out.png</file>
     </qresource>
 </RCC>

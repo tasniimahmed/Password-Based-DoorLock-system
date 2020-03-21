@@ -3,12 +3,44 @@ import QtQuick.Window 2.12
 import QtQuick.Controls 2.1
 
 Window {
-    id: root
+    id: tiva
     visible: true
     width: 1000
     height: 1000
     color: "white"
     title: qsTr("TM4C123GX IDE")
+    property var configration: {"PA2": "NULL","PA3": "NULL","PA4": "NULL","PA5": "NULL","PA6": "NULL","PA7": "NULL","PB0": "NULL","PB1": "NULL","PB2": "NULL","PE1": "NULL","PE0": "NULL","PD7": "NULL","PD6": "NULL","PD4": "NULL","PD3": "NULL","PD2": "NULL","PD1": "NULL","PD0": "NULL","PB3": "NULL","PB4": "NULL","PB5": "NULL","PB6": "NULL","PB7": "NULL","PC4": "NULL","PC5": "NULL","PC6": "NULL","PC7": "NULL","PF4": "NULL","PF3": "NULL","PF2": "NULL","PF1": "NULL","PF0": "NULL","PE5": "NULL","PE4": "NULL","PE3": "NULL","PE2": "NULL"}
+    Rectangle {
+        id: generate
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+        anchors.bottomMargin: 40
+        anchors.rightMargin: 40
+        color: "dark green"
+        width: 100
+        height: 40
+        radius: width/8
+        Text {
+            anchors.centerIn: parent
+            color: "white"
+            text: "Generate"
+            font.pixelSize: parent.height * 0.4
+            font.family: "Comic Sans MS"
+        }
+        MouseArea {
+            id: mousegen
+            anchors.fill: parent
+            acceptedButtons: Qt.LeftButton
+            hoverEnabled: true
+            onEntered: {
+                parent.color = "green"
+            }
+            onExited: {
+                parent.color = "dark green"
+            }
+        }
+    }
+
     MouseArea {
         id: main_mouse
         anchors.fill: parent
@@ -16,13 +48,13 @@ Window {
         onWheel: {
             if(wheel.angleDelta.y > 0)
             {
-                tiva_border.height = tiva_border.height - 10
-                tiva_border.width = tiva_border.width - 10
+                tiva_border.height -= 10
+                tiva_border.width -= 10
             }
             else if(wheel.angleDelta.y < 0)
             {
-                tiva_border.height = tiva_border.height + 10
-                tiva_border.width = tiva_border.width + 10
+                tiva_border.height += 10
+                tiva_border.width += 10
             }
         }
         onPressed: {
@@ -31,8 +63,8 @@ Window {
     }
         Rectangle {
             id : tiva_border
-            width: 400
-            height: 400
+            width: 300
+            height: 300
             color: "blue"
             border.color: "red"
             border.width: 2
@@ -42,7 +74,6 @@ Window {
             Repeater {
                         id: top_pins
                         model: ["PA2","PA3","PA4","PA5","PA6","PA7","PB0","PB1","PB2"]
-                        property var configration: {"PA2": "NULL","PA3": "NULL","PA4": "NULL","PA5": "NULL","PA6": "NULL","PA7": "NULL","PB0": "NULL","PB1": "NULL","PB2": "NULL"}
                             Rectangle {
                                 height: tiva_border.height * 0.1
                                 width: tiva_border.width * 0.1
@@ -65,6 +96,12 @@ Window {
                                     width: parent.width*2
                                     height: parent.height*count
                                     anchors.top: parent.bottom
+                                    anchors.right: {
+                                        if(modelData == "PB2")
+                                        {
+                                            return parent.right
+                                        }
+                                    }
                                     property int last_mode: -1
                                     property int current: 0
                                     Component {
@@ -85,11 +122,32 @@ Window {
                                                 color = "red"
                                                 modeinfo_top.color = "black"
                                             }
+                                            MouseArea {
+                                                id:list_mousetop
+                                                anchors.fill: parent
+                                                acceptedButtons: Qt.LeftButton | Qt.WheelFocus
+                                                hoverEnabled: true
+                                                onEntered: {
+                                                    if(parent.color != "green")
+                                                    {
+                                                        parent.set_color("black","red")
+                                                    }
+                                                }
+                                                onExited: {
+                                                    if(parent.color != "green")
+                                                    {
+                                                        parent.set_color("red","black")
+                                                    }
+                                                }
+                                                onPressed: {
+                                                    parent.set_color("black","red")
+                                                }
+                                            }
                                             Text {
                                                 id: modeinfo_top
                                                 text: name
                                                 font.pixelSize: parent.height * 0.8
-                                                anchors.centerIn: parent
+                                                anchors.centerIn: parent 
                                             }
                                         }
                                     }
@@ -99,50 +157,54 @@ Window {
                                     visible: tiva_border.pin_selected && tiva_border.pin_name == modelData ? true : false
 
                                     Keys.onPressed: {
-                                        if(event.key === Qt.Key_Down && current < 6 && current >= 0)
+                                        handle_list(event.key)
+                                    }
+                                function handle_list(key)
+                                {
+                                    if(key === Qt.Key_Down && current < 6 && current >= 0)
+                                    {
+                                        if(current != last_mode)
                                         {
-                                            if(current != last_mode)
-                                            {
-                                                itemAtIndex(current).set_color("red","black")
-                                            }
-                                            current++
-                                            if(current != last_mode)
-                                            {
-                                                itemAtIndex(current).set_color("black","red")
-                                            }
+                                            itemAtIndex(current).set_color("red","black")
                                         }
-                                        else if(event.key === Qt.Key_Up && current > 0 && current <= 6)
+                                        current++
+                                        if(current != last_mode)
                                         {
-                                            if(current != last_mode)
-                                            {
-                                                itemAtIndex(current).set_color("red","black")
-                                            }
-                                            current--
-                                            if(current != last_mode)
-                                            {
-                                                itemAtIndex(current).set_color("black","red")
-                                            }
-                                        }
-                                        else if(event.key === Qt.Key_Enter - 1)
-                                        {
-                                            if(current != last_mode)
-                                            {
-                                                top_pins.configration[modelData] = itemAtIndex(current).mode
-                                                itemAtIndex(current).set_color("green","black")
-                                                if(last_mode != -1)
-                                                {
-                                                    itemAtIndex(last_mode).set_color("red","black")
-                                                }
-                                                last_mode = current
-                                            }
-                                            else
-                                            {
-                                                top_pins.configration[modelData] = "NULL"
-                                                itemAtIndex(last_mode).set_color("red","black")
-                                                last_mode= -1
-                                            }
+                                            itemAtIndex(current).set_color("black","red")
                                         }
                                     }
+                                    else if(key === Qt.Key_Up && current > 0 && current <= 6)
+                                    {
+                                        if(current != last_mode)
+                                        {
+                                            itemAtIndex(current).set_color("red","black")
+                                        }
+                                        current--
+                                        if(current != last_mode)
+                                        {
+                                            itemAtIndex(current).set_color("black","red")
+                                        }
+                                    }
+                                    else if(key === Qt.Key_Enter - 1)
+                                    {
+                                        if(current != last_mode)
+                                        {
+                                            tiva.configration[modelData] = itemAtIndex(current).mode
+                                            itemAtIndex(current).set_color("green","black")
+                                            if(last_mode != -1)
+                                            {
+                                                itemAtIndex(last_mode).set_color("red","black")
+                                            }
+                                            last_mode = current
+                                        }
+                                        else
+                                        {
+                                            tiva.configration[modelData] = "NULL"
+                                            itemAtIndex(last_mode).set_color("red","black")
+                                            last_mode= -1
+                                        }
+                                    }
+                                  }
                                 }
                                 MouseArea {
                                     id: mousetop
@@ -159,7 +221,6 @@ Window {
             Repeater {
                         id: bottom_pins
                         model: ["PE1","PE0","PD7","PD6","PD4","PD3","PD2","PD1","PD0"]
-                        property var configration: {"PE1": "NULL","PE0": "NULL","PD7": "NULL","PD6": "NULL","PD4": "NULL","PD3": "NULL","PD2": "NULL","PD1": "NULL","PD0": "NULL"}
                             Rectangle {
                                 height: tiva_border.height * 0.1
                                 width: tiva_border.width * 0.1
@@ -244,7 +305,7 @@ Window {
                                         {
                                             if(current != last_mode)
                                             {
-                                                bottom_pins.configration[modelData] = itemAtIndex(current).mode
+                                                tiva.configration[modelData] = itemAtIndex(current).mode
                                                 itemAtIndex(current).set_color("green","black")
                                                 if(last_mode != -1)
                                                 {
@@ -254,7 +315,7 @@ Window {
                                             }
                                             else
                                             {
-                                                bottom_pins.configration[modelData] = "NULL"
+                                                tiva.configration[modelData] = "NULL"
                                                 itemAtIndex(last_mode).set_color("red","black")
                                                 last_mode= -1
                                             }
@@ -276,7 +337,6 @@ Window {
             Repeater {
                         id: right_pins
                         model: ["PB3","PB4","PB5","PB6","PB7","PC4","PC5","PC6","PC7"]
-                        property var configration: {"PB3": "NULL","PB4": "NULL","PB5": "NULL","PB6": "NULL","PB7": "NULL","PC4": "NULL","PC5": "NULL","PC6": "NULL","PC7": "NULL"}
                             Rectangle {
                                 height: tiva_border.height * 0.1
                                 width: tiva_border.width * 0.1
@@ -361,7 +421,7 @@ Window {
                                         {
                                             if(current != last_mode)
                                             {
-                                                right_pins.configration[modelData] = itemAtIndex(current).mode
+                                                tiva.configration[modelData] = itemAtIndex(current).mode
                                                 itemAtIndex(current).set_color("green","black")
                                                 if(last_mode != -1)
                                                 {
@@ -371,7 +431,7 @@ Window {
                                             }
                                             else
                                             {
-                                                right_pins.configration[modelData] = "NULL"
+                                                tiva.configration[modelData] = "NULL"
                                                 itemAtIndex(last_mode).set_color("red","black")
                                                 last_mode= -1
                                             }
@@ -393,7 +453,6 @@ Window {
             Repeater {
                         id: left_pins
                         model: ["PF4","PF3","PF2","PF1","PF0","PE5","PE4","PE3","PE2"]
-                        property var configration: {"PF4": "NULL","PF3": "NULL","PF2": "NULL","PF1": "NULL","PF0": "NULL","PE5": "NULL","PE4": "NULL","PE3": "NULL","PE2": "NULL"}
                             Rectangle {
                                 height: tiva_border.height * 0.1
                                 width: tiva_border.width * 0.1
@@ -478,7 +537,7 @@ Window {
                                         {
                                             if(current != last_mode)
                                             {
-                                                left_pins.configration[modelData] = itemAtIndex(current).mode
+                                                tiva.configration[modelData] = itemAtIndex(current).mode
                                                 itemAtIndex(current).set_color("green","black")
                                                 if(last_mode != -1)
                                                 {
@@ -488,7 +547,7 @@ Window {
                                             }
                                             else
                                             {
-                                                left_pins.configration[modelData] = "NULL"
+                                                tiva.configration[modelData] = "NULL"
                                                 itemAtIndex(last_mode).set_color("red","black")
                                                 last_mode= -1
                                             }
@@ -533,4 +592,67 @@ Window {
                    }
                  }
         }
+        Row {
+            id: zoom
+            anchors.bottom: parent.bottom
+            anchors.horizontalCenter: parent.horizontalCenter
+            Rectangle {
+                id:zoom_in_rec
+                height: zoom_in.height*0.25
+                width: zoom_in.width*0.25
+                color: "white"
+                radius: width/5
+                Image {
+                    id: zoom_in
+                    source: "zoom_in.png"
+                    anchors.centerIn: parent
+                    mipmap: true
+                    scale: 0.2
+                    MouseArea {
+                        anchors.fill: parent
+                        acceptedButtons: Qt.LeftButton
+                        hoverEnabled: true
+                        onEntered: {
+                            zoom_in_rec.color = "lightsteelblue"
+                        }
+                        onExited: {
+                            zoom_in_rec.color = "white"
+                        }
+                        onClicked: {
+                            tiva_border.height += 10
+                            tiva_border.width += 10
+                        }
+                    }
+                }
+            }
+            Rectangle {
+                id:zoom_out_rec
+                height: zoom_out.height*0.25
+                width: zoom_out.width*0.25
+                color: "white"
+                radius: width/5
+                Image {
+                    id: zoom_out
+                    source: "zoom_out.png"
+                    anchors.centerIn: parent
+                    mipmap: true
+                    scale: 0.2
+                    MouseArea {
+                        anchors.fill: parent
+                        acceptedButtons: Qt.LeftButton
+                        hoverEnabled: true
+                        onEntered: {
+                            zoom_out_rec.color = "lightsteelblue"
+                        }
+                        onExited: {
+                            zoom_out_rec.color = "white"
+                        }
+                        onClicked: {
+                            tiva_border.height -= 10
+                            tiva_border.width -= 10
+                        }
+                    }
+                }
+            }
+       }
 }
