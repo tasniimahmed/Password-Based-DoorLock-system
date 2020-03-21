@@ -65,25 +65,31 @@ Window {
                                     width: parent.width*2
                                     height: parent.height*count
                                     anchors.top: parent.bottom
-                                    property int last_mode: 6
+                                    property int last_mode: -1
                                     property int current: 0
                                     Component {
                                         id: modesDelegatetop
                                         Rectangle {
-                                            id: wrapper_top
                                             width: list_top.width
                                             height: list_top.height/(list_top.count*2)
                                             radius: width/2
                                             border.width: width*0.01
                                             border.color: "black"
-                                            color: ListView.isCurrentItem ? "black" : "red"
                                             property string mode: modeinfo_top.text
+                                            function set_color(rect_color,text_color)
+                                            {
+                                                color = rect_color
+                                                modeinfo_top.color = text_color
+                                            }
+                                            Component.onCompleted: {
+                                                color = "red"
+                                                modeinfo_top.color = "black"
+                                            }
                                             Text {
                                                 id: modeinfo_top
                                                 text: name
                                                 font.pixelSize: parent.height * 0.8
                                                 anchors.centerIn: parent
-                                                color: wrapper_top.ListView.isCurrentItem ? "red" : "black"
                                             }
                                         }
                                     }
@@ -91,23 +97,51 @@ Window {
                                     delegate: modesDelegatetop
                                     focus: tiva_border.pin_selected && tiva_border.pin_name == modelData ? true : false
                                     visible: tiva_border.pin_selected && tiva_border.pin_name == modelData ? true : false
+
                                     Keys.onPressed: {
                                         if(event.key === Qt.Key_Down && current < 6 && current >= 0)
                                         {
+                                            if(current != last_mode)
+                                            {
+                                                itemAtIndex(current).set_color("red","black")
+                                            }
                                             current++
+                                            if(current != last_mode)
+                                            {
+                                                itemAtIndex(current).set_color("black","red")
+                                            }
                                         }
                                         else if(event.key === Qt.Key_Up && current > 0 && current <= 6)
                                         {
+                                            if(current != last_mode)
+                                            {
+                                                itemAtIndex(current).set_color("red","black")
+                                            }
                                             current--
+                                            if(current != last_mode)
+                                            {
+                                                itemAtIndex(current).set_color("black","red")
+                                            }
                                         }
                                         else if(event.key === Qt.Key_Enter - 1)
                                         {
-                                            top_pins.configration[modelData] = itemAtIndex(current).mode
-                                            itemAtIndex(current).color = "green"
-                                            itemAtIndex(last_mode).color = "red"
-                                            last_mode = current
+                                            if(current != last_mode)
+                                            {
+                                                top_pins.configration[modelData] = itemAtIndex(current).mode
+                                                itemAtIndex(current).set_color("green","black")
+                                                if(last_mode != -1)
+                                                {
+                                                    itemAtIndex(last_mode).set_color("red","black")
+                                                }
+                                                last_mode = current
+                                            }
+                                            else
+                                            {
+                                                top_pins.configration[modelData] = "NULL"
+                                                itemAtIndex(last_mode).set_color("red","black")
+                                                last_mode= -1
+                                            }
                                         }
-                                        console.log(currentIndex,current)
                                     }
                                 }
                                 MouseArea {
@@ -125,6 +159,7 @@ Window {
             Repeater {
                         id: bottom_pins
                         model: ["PE1","PE0","PD7","PD6","PD4","PD3","PD2","PD1","PD0"]
+                        property var configration: {"PE1": "NULL","PE0": "NULL","PD7": "NULL","PD6": "NULL","PD4": "NULL","PD3": "NULL","PD2": "NULL","PD1": "NULL","PD0": "NULL"}
                             Rectangle {
                                 height: tiva_border.height * 0.1
                                 width: tiva_border.width * 0.1
@@ -147,28 +182,84 @@ Window {
                                     width: parent.width*2
                                     height: parent.height*count
                                     anchors.top: parent.bottom
+                                    property int last_mode: -1
+                                    property int current: 0
                                     Component {
-                                        id: contactsDelegate
+                                        id: modesDelegatebottom
                                         Rectangle {
-                                            id: wrapper
                                             width: list_bottom.width
                                             height: list_bottom.height/(list_bottom.count*2)
                                             radius: width/2
-                                            color: ListView.isCurrentItem ? "black" : "red"
+                                            border.width: width*0.01
+                                            border.color: "black"
+                                            property string mode: modeinfo_bottom.text
+                                            function set_color(rect_color,text_color)
+                                            {
+                                                color = rect_color
+                                                modeinfo_bottom.color = text_color
+                                            }
+                                            Component.onCompleted: {
+                                                color = "red"
+                                                modeinfo_bottom.color = "black"
+                                            }
                                             Text {
-                                                id: contactInfo
+                                                id: modeinfo_bottom
                                                 text: name
                                                 font.pixelSize: parent.height * 0.8
                                                 anchors.centerIn: parent
-                                                color: wrapper.ListView.isCurrentItem ? "red" : "black"
                                             }
                                         }
                                     }
-
                                     model: ModeList {}
-                                    delegate: contactsDelegate
+                                    delegate: modesDelegatebottom
                                     focus: tiva_border.pin_selected && tiva_border.pin_name == modelData ? true : false
                                     visible: tiva_border.pin_selected && tiva_border.pin_name == modelData ? true : false
+
+                                    Keys.onPressed: {
+                                        if(event.key === Qt.Key_Down && current < 6 && current >= 0)
+                                        {
+                                            if(current != last_mode)
+                                            {
+                                                itemAtIndex(current).set_color("red","black")
+                                            }
+                                            current++
+                                            if(current != last_mode)
+                                            {
+                                                itemAtIndex(current).set_color("black","red")
+                                            }
+                                        }
+                                        else if(event.key === Qt.Key_Up && current > 0 && current <= 6)
+                                        {
+                                            if(current != last_mode)
+                                            {
+                                                itemAtIndex(current).set_color("red","black")
+                                            }
+                                            current--
+                                            if(current != last_mode)
+                                            {
+                                                itemAtIndex(current).set_color("black","red")
+                                            }
+                                        }
+                                        else if(event.key === Qt.Key_Enter - 1)
+                                        {
+                                            if(current != last_mode)
+                                            {
+                                                bottom_pins.configration[modelData] = itemAtIndex(current).mode
+                                                itemAtIndex(current).set_color("green","black")
+                                                if(last_mode != -1)
+                                                {
+                                                    itemAtIndex(last_mode).set_color("red","black")
+                                                }
+                                                last_mode = current
+                                            }
+                                            else
+                                            {
+                                                bottom_pins.configration[modelData] = "NULL"
+                                                itemAtIndex(last_mode).set_color("red","black")
+                                                last_mode= -1
+                                            }
+                                        }
+                                    }
                                 }
                                 MouseArea {
                                     id: mousebottom
@@ -185,6 +276,7 @@ Window {
             Repeater {
                         id: right_pins
                         model: ["PB3","PB4","PB5","PB6","PB7","PC4","PC5","PC6","PC7"]
+                        property var configration: {"PB3": "NULL","PB4": "NULL","PB5": "NULL","PB6": "NULL","PB7": "NULL","PC4": "NULL","PC5": "NULL","PC6": "NULL","PC7": "NULL"}
                             Rectangle {
                                 height: tiva_border.height * 0.1
                                 width: tiva_border.width * 0.1
@@ -207,28 +299,84 @@ Window {
                                     width: parent.width*2
                                     height: parent.height*count
                                     anchors.left: parent.right
+                                    property int last_mode: -1
+                                    property int current: 0
                                     Component {
-                                        id: contactsDelegate
+                                        id: modesDelegateright
                                         Rectangle {
-                                            id: wrapper
                                             width: list_right.width
                                             height: list_right.height/(list_right.count*2)
                                             radius: width/2
-                                            color: ListView.isCurrentItem ? "black" : "red"
+                                            border.width: width*0.01
+                                            border.color: "black"
+                                            property string mode: modeinfo_right.text
+                                            function set_color(rect_color,text_color)
+                                            {
+                                                color = rect_color
+                                                modeinfo_right.color = text_color
+                                            }
+                                            Component.onCompleted: {
+                                                color = "red"
+                                                modeinfo_right.color = "black"
+                                            }
                                             Text {
-                                                id: contactInfo
+                                                id: modeinfo_right
                                                 text: name
                                                 font.pixelSize: parent.height * 0.8
                                                 anchors.centerIn: parent
-                                                color: wrapper.ListView.isCurrentItem ? "red" : "black"
                                             }
                                         }
                                     }
-
                                     model: ModeList {}
-                                    delegate: contactsDelegate
+                                    delegate: modesDelegateright
                                     focus: tiva_border.pin_selected && tiva_border.pin_name == modelData ? true : false
                                     visible: tiva_border.pin_selected && tiva_border.pin_name == modelData ? true : false
+
+                                    Keys.onPressed: {
+                                        if(event.key === Qt.Key_Down && current < 6 && current >= 0)
+                                        {
+                                            if(current != last_mode)
+                                            {
+                                                itemAtIndex(current).set_color("red","black")
+                                            }
+                                            current++
+                                            if(current != last_mode)
+                                            {
+                                                itemAtIndex(current).set_color("black","red")
+                                            }
+                                        }
+                                        else if(event.key === Qt.Key_Up && current > 0 && current <= 6)
+                                        {
+                                            if(current != last_mode)
+                                            {
+                                                itemAtIndex(current).set_color("red","black")
+                                            }
+                                            current--
+                                            if(current != last_mode)
+                                            {
+                                                itemAtIndex(current).set_color("black","red")
+                                            }
+                                        }
+                                        else if(event.key === Qt.Key_Enter - 1)
+                                        {
+                                            if(current != last_mode)
+                                            {
+                                                right_pins.configration[modelData] = itemAtIndex(current).mode
+                                                itemAtIndex(current).set_color("green","black")
+                                                if(last_mode != -1)
+                                                {
+                                                    itemAtIndex(last_mode).set_color("red","black")
+                                                }
+                                                last_mode = current
+                                            }
+                                            else
+                                            {
+                                                right_pins.configration[modelData] = "NULL"
+                                                itemAtIndex(last_mode).set_color("red","black")
+                                                last_mode= -1
+                                            }
+                                        }
+                                    }
                                 }
                                 MouseArea {
                                     id: mouseright
@@ -245,6 +393,7 @@ Window {
             Repeater {
                         id: left_pins
                         model: ["PF4","PF3","PF2","PF1","PF0","PE5","PE4","PE3","PE2"]
+                        property var configration: {"PF4": "NULL","PF3": "NULL","PF2": "NULL","PF1": "NULL","PF0": "NULL","PE5": "NULL","PE4": "NULL","PE3": "NULL","PE2": "NULL"}
                             Rectangle {
                                 height: tiva_border.height * 0.1
                                 width: tiva_border.width * 0.1
@@ -267,28 +416,84 @@ Window {
                                     width: parent.width*2
                                     height: parent.height*count
                                     anchors.right: parent.left
+                                    property int last_mode: -1
+                                    property int current: 0
                                     Component {
-                                        id: contactsDelegate
+                                        id: modesDelegateleft
                                         Rectangle {
-                                            id: wrapper
                                             width: list_left.width
                                             height: list_left.height/(list_left.count*2)
                                             radius: width/2
-                                            color: ListView.isCurrentItem ? "black" : "red"
+                                            border.width: width*0.01
+                                            border.color: "black"
+                                            property string mode: modeinfo_left.text
+                                            function set_color(rect_color,text_color)
+                                            {
+                                                color = rect_color
+                                                modeinfo_left.color = text_color
+                                            }
+                                            Component.onCompleted: {
+                                                color = "red"
+                                                modeinfo_left.color = "black"
+                                            }
                                             Text {
-                                                id: contactInfo
+                                                id: modeinfo_left
                                                 text: name
                                                 font.pixelSize: parent.height * 0.8
                                                 anchors.centerIn: parent
-                                                color: wrapper.ListView.isCurrentItem ? "red" : "black"
                                             }
                                         }
                                     }
-
                                     model: ModeList {}
-                                    delegate: contactsDelegate
+                                    delegate: modesDelegateleft
                                     focus: tiva_border.pin_selected && tiva_border.pin_name == modelData ? true : false
                                     visible: tiva_border.pin_selected && tiva_border.pin_name == modelData ? true : false
+
+                                    Keys.onPressed: {
+                                        if(event.key === Qt.Key_Down && current < 6 && current >= 0)
+                                        {
+                                            if(current != last_mode)
+                                            {
+                                                itemAtIndex(current).set_color("red","black")
+                                            }
+                                            current++
+                                            if(current != last_mode)
+                                            {
+                                                itemAtIndex(current).set_color("black","red")
+                                            }
+                                        }
+                                        else if(event.key === Qt.Key_Up && current > 0 && current <= 6)
+                                        {
+                                            if(current != last_mode)
+                                            {
+                                                itemAtIndex(current).set_color("red","black")
+                                            }
+                                            current--
+                                            if(current != last_mode)
+                                            {
+                                                itemAtIndex(current).set_color("black","red")
+                                            }
+                                        }
+                                        else if(event.key === Qt.Key_Enter - 1)
+                                        {
+                                            if(current != last_mode)
+                                            {
+                                                left_pins.configration[modelData] = itemAtIndex(current).mode
+                                                itemAtIndex(current).set_color("green","black")
+                                                if(last_mode != -1)
+                                                {
+                                                    itemAtIndex(last_mode).set_color("red","black")
+                                                }
+                                                last_mode = current
+                                            }
+                                            else
+                                            {
+                                                left_pins.configration[modelData] = "NULL"
+                                                itemAtIndex(last_mode).set_color("red","black")
+                                                last_mode= -1
+                                            }
+                                        }
+                                    }
                                 }
                                 MouseArea {
                                     id: mouseleft
