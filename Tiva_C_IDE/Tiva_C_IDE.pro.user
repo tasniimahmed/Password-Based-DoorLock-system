@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.11.1, 2020-03-21T21:09:12. -->
+<!-- Written by QtCreator 4.11.1, 2020-03-23T23:00:26. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -285,9 +285,8 @@
     </valuelist>
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">Tiva_C_IDE2</value>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:/media/ahmedmoamen/46BA7CAEBA7C9BDD/project/DoorLock/Password-Based-DoorLock-system/Tiva_C_IDE/Tiva_C_IDE.pro</value>
-    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">/media/ahmedmoamen/46BA7CAEBA7C9BDD/project/DoorLock/Password-Based-DoorLock-system/Tiva_C_IDE/Tiva_C_IDE.pro</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:/media/ahmedmoamen/46BA7CAEBA7C9BDD/project/Tiva IDE/Tiva_C_IDE/Tiva_C_IDE.pro</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">/media/ahmedmoamen/46BA7CAEBA7C9BDD/project/Tiva IDE/Tiva_C_IDE/Tiva_C_IDE.pro</value>
     <value type="QString" key="RunConfiguration.Arguments"></value>
     <value type="bool" key="RunConfiguration.Arguments.multi">false</value>
     <value type="QString" key="RunConfiguration.OverrideDebuggerStartup"></value>
