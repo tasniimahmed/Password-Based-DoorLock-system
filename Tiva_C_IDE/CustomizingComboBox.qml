@@ -2,30 +2,30 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 
 ComboBox {
-    id:boudrate
+    id:combobox
     delegate: ItemDelegate {
-        width: boudrate.width
-        height: boudrate.height
+        width: combobox.width
+        height: combobox.height
         contentItem: Text {
             text: modelData
-            color: "orange"
-            font: boudrate.font
+            color: "dark red"
+            font: combobox.font
             elide: Text.ElideRight
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
         }
-        highlighted: boudrate.highlightedIndex === index
+        highlighted: combobox.highlightedIndex === index
     }
 
     indicator: Canvas {
         id: canvas
-        x: boudrate.width - width - boudrate.rightPadding
-        y: boudrate.topPadding + (boudrate.availableHeight - height) / 2
+        x: combobox.width - width - combobox.rightPadding
+        y: combobox.topPadding + (combobox.availableHeight - height) / 2
         width: 12
         height: 8
         contextType: "2d"
         Connections {
-            target: boudrate
+            target: combobox
             onPressedChanged: canvas.requestPaint()
         }
 
@@ -35,17 +35,17 @@ ComboBox {
             context.lineTo(width, 0);
             context.lineTo(width / 2, height);
             context.closePath();
-            context.fillStyle = boudrate.pressed ? "orange" : "dark red";
+            context.fillStyle = combobox.pressed ? "orange" : "dark red";
             context.fill();
         }
     }
 
     contentItem: Text {
         leftPadding: 0
-        rightPadding: boudrate.indicator.width + boudrate.spacing
-        text: boudrate.displayText
-        font: boudrate.font
-        color: boudrate.pressed ? "dark red" : "orange"
+        rightPadding: combobox.indicator.width + combobox.spacing
+        text: combobox.displayText
+        font: combobox.font
+        color: combobox.pressed ? "dark red" : "orange"
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
         elide: Text.ElideRight
@@ -55,29 +55,29 @@ ComboBox {
         implicitWidth: 100
         implicitHeight: 25
         color: "black"
-        border.color: boudrate.pressed ? "dark red" : "orange"
-        border.width: boudrate.visualFocus ? 2 : 1
+        border.color: combobox.pressed ? "dark red" : "orange"
+        border.width: combobox.visualFocus ? 2 : 1
         radius: 5
     }
 
     popup: Popup {
-        y: boudrate.height - 1
-        width: boudrate.width
+        y: combobox.height - 1
+        width: combobox.width
         implicitHeight: contentItem.implicitHeight
         padding: 1
 
         contentItem: ListView {
             clip: true
             implicitHeight: contentHeight
-            model: boudrate.popup.visible ? boudrate.delegateModel : null
-            currentIndex: boudrate.highlightedIndex
+            model: combobox.popup.visible ? combobox.delegateModel : null
+            currentIndex: combobox.highlightedIndex
 
             ScrollIndicator.vertical: ScrollIndicator { }
         }
 
         background: Rectangle {
             id: background
-            border.color: "dark red"
+            border.color: "orange"
             radius: 2
         }
     }

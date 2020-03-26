@@ -7,5 +7,9 @@
         <file>zoom_out.png</file>
         <file>UARTConfigration.qml</file>
         <file>CustomizingComboBox.qml</file>
+        <file>ModeListTop.qml</file>
+        <file>ModeListBottom.qml</file>
+        <file>ModeListRight.qml</file>
+        <file>ModeListLeft.qml</file>
     </qresource>
 </RCC>

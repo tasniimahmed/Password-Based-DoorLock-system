@@ -12,6 +12,14 @@ Window {
     title: qsTr("TM4C123GX IDE")
     property var configration: {"PA2": "NULL","PA3": "NULL","PA4": "NULL","PA5": "NULL","PA6": "NULL","PA7": "NULL","PB0": "NULL","PB1": "NULL","PB2": "NULL","PE1": "NULL","PE0": "NULL","PD7": "NULL","PD6": "NULL","PD4": "NULL","PD3": "NULL","PD2": "NULL","PD1": "NULL","PD0": "NULL","PB3": "NULL","PB4": "NULL","PB5": "NULL","PB6": "NULL","PB7": "NULL","PC4": "NULL","PC5": "NULL","PC6": "NULL","PC7": "NULL","PF4": "NULL","PF3": "NULL","PF2": "NULL","PF1": "NULL","PF0": "NULL","PE5": "NULL","PE4": "NULL","PE3": "NULL","PE2": "NULL"}
     property string last_pin_mode: "NULL"
+    function readValues(map)
+    {
+        for(var i in map)
+        {
+            console.log(map[i])
+        }
+    }
+
     Rectangle {
         id: container
         anchors.horizontalCenter: parent.horizontalCenter
@@ -46,7 +54,7 @@ Window {
             anchors.fill: parent
             acceptedButtons: Qt.LeftButton | Qt.WheelFocus
             onWheel: {
-                if(wheel.angleDelta.y > 0)
+                if(wheel.angleDelta.y > 0 && tiva_border.height >= 200)
                 {
                     tiva_border.height -= 10
                     tiva_border.width -= 10
@@ -68,7 +76,9 @@ Window {
             anchors.bottomMargin: 40
             anchors.rightMargin: 40
             z: 10
-            color: "dark green"
+            color: "green"
+            border.color: "black"
+            border.width: 2
             width: 100
             height: 40
             radius: width/15
@@ -85,10 +95,10 @@ Window {
                 acceptedButtons: Qt.LeftButton
                 hoverEnabled: true
                 onEntered: {
-                    parent.color = "green"
+                    parent.color = " dark green"
                 }
                 onExited: {
-                    parent.color = "dark green"
+                    parent.color = "green"
                 }
             }
         }
@@ -138,9 +148,16 @@ Window {
                 anchors.topMargin: parent.height/10
                 property bool pin_selected: false
                 property string pin_name: "NULL"
-                property string configured_color: "green"
-                property string hovered_color: "lightsteelblue"
-                property string default_color: "black"
+                property string pin_configured_color: "green"
+                property string pin_hovered_color: "lightsteelblue"
+                property string pin_default_color: "black"
+                property string pin_text_color: "red"
+                property string pin_text_configured_color: "black"
+                property string list_mode_color: "red"
+                property string list_configured_color: "green"
+                property string list_text_color: "black"
+                property string list_mode_hovered_color: "black"
+                property string list_text_hovered_color: "red"
                 Repeater {
                     id: top_pins
                     model: ["PA2","PA3","PA4","PA5","PA6","PA7","PB0","PB1","PB2"]
@@ -151,18 +168,18 @@ Window {
                         color:  {
                             if(list_top.last_mode != -1)
                             {
-                                pin_name_top.color = "black"
-                                return tiva_border.configured_color
+                                pin_name_top.color = tiva_border.pin_text_configured_color
+                                return tiva_border.pin_configured_color
                             }
                             else if(mousetop.containsMouse)
                             {
-                                pin_name_top.color = "red"
-                                return tiva_border.hovered_color
+                                pin_name_top.color = tiva_border.pin_text_color
+                                return tiva_border.pin_hovered_color
                             }
                             else
                             {
-                                pin_name_top.color = "red"
-                                return tiva_border.default_color
+                                pin_name_top.color = tiva_border.pin_text_color
+                                return tiva_border.pin_default_color
                             }
                         }
                         border.color: "red"
@@ -173,7 +190,6 @@ Window {
                         Text {
                             id: pin_name_top
                             anchors.centerIn: parent
-                            color: "red"
                             text: modelData
                             font.pixelSize: parent.height * 0.4
                             font.family: "Comic Sans MS"
@@ -187,6 +203,53 @@ Window {
                                 if(modelData == "PB2")
                                 {
                                     return parent.right
+                                }
+                            }
+                            Component.onCompleted: {
+                                if(modelData == "PA2"){
+                                    modetop.remove(3,15)
+                                }
+                                else if(modelData == "PA3"){
+                                    modetop.remove(4,14)
+                                    modetop.remove(2)
+                                }
+                                else if(modelData == "PA4"){
+                                    modetop.remove(5,13)
+                                    modetop.remove(2,2)
+                                }
+                                else if(modelData == "PA5"){
+                                    modetop.remove(6,12)
+                                    modetop.remove(2,3)
+                                }
+                                else if(modelData == "PA6"){
+                                    modetop.remove(8,10)
+                                    modetop.remove(2,4)
+                                }
+                                else if(modelData == "PA7"){
+                                    modetop.remove(10,8)
+                                    modetop.remove(2,6)
+                                }
+                                else if(modelData == "PB0"){
+                                    modetop.remove(13,5)
+                                    modetop.remove(2,8)
+                                }
+                                else if(modelData == "PB1"){
+                                    modetop.remove(16,2)
+                                    modetop.remove(2,11)
+                                }
+                                else if(modelData == "PB2"){
+                                    modetop.remove(2,14)
+                                }
+                            }
+                            property int numberOfMode: {
+                                if(modelData == "PA2" || modelData == "PA3" || modelData == "PA4" || modelData == "PA5" || modelData == "PB2"){
+                                    return 3;
+                                }
+                                else if(modelData == "PA6" || modelData == "PA7"){
+                                    return 4;
+                                }
+                                else if(modelData == "PB0" || modelData == "PB1"){
+                                    return 5;
                                 }
                             }
                             property int last_mode: -1
@@ -206,8 +269,8 @@ Window {
                                         modeinfo_top.color = text_color
                                     }
                                     Component.onCompleted: {
-                                        color = "red"
-                                        modeinfo_top.color = "black"
+                                        color = tiva_border.list_mode_color
+                                        modeinfo_top.color = tiva_border.list_text_color
                                     }
                                     MouseArea {
                                         anchors.fill: parent
@@ -216,19 +279,19 @@ Window {
                                         onEntered: {
                                             if(list_top.last_mode != list_index)
                                             {
-                                                parent.set_color("black","red")
+                                                parent.set_color(tiva_border.list_mode_hovered_color,tiva_border.list_text_hovered_color)
                                             }
                                         }
                                         onExited: {
                                             if(list_top.last_mode != list_index)
                                             {
-                                                parent.set_color("red","black")
+                                                parent.set_color(tiva_border.list_mode_color,tiva_border.list_text_color)
                                             }
                                         }
                                         onClicked: {
                                             if(list_top.last_mode == -1)
                                             {
-                                                parent.set_color("green","black")
+                                                parent.set_color(tiva_border.list_configured_color,tiva_border.list_text_color)
                                                 list_top.last_mode = list_index
                                                 tiva.configration[modelData] = parent.mode
                                                 tiva.last_pin_mode = tiva.configration[modelData]
@@ -238,7 +301,7 @@ Window {
                                             }
                                             else if(list_top.last_mode == list_index)
                                             {
-                                                parent.set_color("red","black")
+                                                parent.set_color(tiva_border.list_mode_color,tiva_border.list_text_color)
                                                 list_top.last_mode = -1
                                                 tiva.configration[modelData] = "NULL"
                                                 tiva.last_pin_mode = tiva.configration[modelData]
@@ -249,7 +312,7 @@ Window {
                                             else
                                             {
                                                 list_top.reset_list()
-                                                parent.set_color("green","black")
+                                                parent.set_color(tiva_border.list_configured_color,tiva_border.list_text_color)
                                                 list_top.last_mode = list_index
                                                 tiva.configration[modelData] = parent.mode
                                                 tiva.last_pin_mode = tiva.configration[modelData]
@@ -262,16 +325,15 @@ Window {
                                     Text {
                                         id: modeinfo_top
                                         text: name
-                                        font.pixelSize: parent.height * 0.8
+                                        font.pixelSize: parent.height * 0.75
                                         anchors.centerIn: parent
                                     }
                                 }
                             }
-                            model: ModeList {}
+                            model: ModeListTop {id: modetop}
                             delegate: modesDelegatetop
                             focus: tiva_border.pin_selected && tiva_border.pin_name == modelData ? true : false
                             visible: tiva_border.pin_selected && tiva_border.pin_name == modelData ? true : false
-
                             Keys.onPressed: {
                                 handle_list(event.key)
                             }
@@ -279,34 +341,34 @@ Window {
                             {
                                 for(var i = 0;i<count;i++)
                                 {
-                                    itemAtIndex(i).set_color("red","black")
+                                    itemAtIndex(i).set_color(tiva_border.list_mode_color,tiva_border.list_text_color)
                                 }
                             }
 
                             function handle_list(key)
                             {
-                                if(key === Qt.Key_Down && current < 6 && current >= 0)
+                                if(key === Qt.Key_Down && current < numberOfMode - 1 && current >= 0)
                                 {
                                     if(current != last_mode)
                                     {
-                                        itemAtIndex(current).set_color("red","black")
+                                        itemAtIndex(current).set_color(tiva_border.list_mode_color,tiva_border.list_text_color)
                                     }
                                     current++
                                     if(current != last_mode)
                                     {
-                                        itemAtIndex(current).set_color("black","red")
+                                        itemAtIndex(current).set_color(tiva_border.list_mode_hovered_color,tiva_border.list_text_hovered_color)
                                     }
                                 }
-                                else if(key === Qt.Key_Up && current > 0 && current <= 6)
+                                else if(key === Qt.Key_Up && current > 0 && current <= numberOfMode - 1)
                                 {
                                     if(current != last_mode)
                                     {
-                                        itemAtIndex(current).set_color("red","black")
+                                        itemAtIndex(current).set_color(tiva_border.list_mode_color,tiva_border.list_text_color)
                                     }
                                     current--
                                     if(current != last_mode)
                                     {
-                                        itemAtIndex(current).set_color("black","red")
+                                        itemAtIndex(current).set_color(tiva_border.list_mode_hovered_color,tiva_border.list_text_hovered_color)
                                     }
                                 }
                                 else if(key === Qt.Key_Enter - 1)
@@ -315,10 +377,10 @@ Window {
                                     {
                                         tiva.configration[modelData] = itemAtIndex(current).mode
                                         tiva.last_pin_mode = tiva.configration[modelData]
-                                        itemAtIndex(current).set_color("green","black")
+                                        itemAtIndex(current).set_color(tiva_border.list_configured_color,tiva_border.list_text_color)
                                         if(last_mode != -1)
                                         {
-                                            itemAtIndex(last_mode).set_color("red","black")
+                                            itemAtIndex(last_mode).set_color(tiva_border.list_mode_color,tiva_border.list_text_color)
                                         }
                                         last_mode = current
                                         container.state = "configrationanchors"
@@ -329,7 +391,7 @@ Window {
                                     {
                                         tiva.configration[modelData] = "NULL"
                                         tiva.last_pin_mode = tiva.configration[modelData]
-                                        itemAtIndex(last_mode).set_color("red","black")
+                                        itemAtIndex(last_mode).set_color(tiva_border.list_mode_color,tiva_border.list_text_color)
                                         last_mode= -1
                                         container.state = "normalanchors"
                                         load_config.sourceComponent = undefined
@@ -392,18 +454,18 @@ Window {
                         color:  {
                             if(list_bottom.last_mode != -1)
                             {
-                                pin_name_bottom.color = "black"
-                                return tiva_border.configured_color
+                                pin_name_bottom.color = tiva_border.pin_text_configured_color
+                                return tiva_border.pin_configured_color
                             }
                             else if(mousebottom.containsMouse)
                             {
-                                pin_name_bottom.color = "red"
-                                return tiva_border.hovered_color
+                                pin_name_bottom.color = tiva_border.pin_text_color
+                                return tiva_border.pin_hovered_color
                             }
                             else
                             {
-                                pin_name_bottom.color = "red"
-                                return tiva_border.default_color
+                                pin_name_bottom.color = tiva_border.pin_text_color
+                                return tiva_border.pin_default_color
                             }
                         }
                         border.color: "red"
@@ -414,7 +476,6 @@ Window {
                         Text {
                             id: pin_name_bottom
                             anchors.centerIn: parent
-                            color: "red"
                             text: modelData
                             font.pixelSize: parent.height * 0.4
                             font.family: "Comic Sans MS"
@@ -424,6 +485,59 @@ Window {
                             width: parent.width*2
                             height: parent.height*count
                             anchors.top: parent.bottom
+                            Component.onCompleted: {
+                                if(modelData == "PD0"){
+                                    modebottom.remove(9,34)
+                                }
+                                else if(modelData == "PD1"){
+                                    modebottom.remove(16,27)
+                                    modebottom.remove(2,7)
+                                }
+                                else if(modelData == "PD2"){
+                                    modebottom.remove(22,21)
+                                    modebottom.remove(2,14)
+                                }
+                                else if(modelData == "PD3"){
+                                    modebottom.remove(28,15)
+                                    modebottom.remove(2,20)
+                                }
+                                else if(modelData == "PD4"){
+                                    modebottom.remove(31,12)
+                                    modebottom.remove(2,26)
+                                }
+                                else if(modelData == "PD6"){
+                                    modebottom.remove(35,8)
+                                    modebottom.remove(2,29)
+                                }
+                                else if(modelData == "PD7"){
+                                    modebottom.remove(39,4)
+                                    modebottom.remove(2,33)
+                                }
+                                else if(modelData == "PE0"){
+                                    modebottom.remove(41,2)
+                                    modebottom.remove(2,37)
+                                }
+                                else if(modelData == "PE1"){
+                                    modebottom.remove(2,39)
+                                }
+                            }
+                            property int numberOfMode: {
+                                if(modelData == "PE0" || modelData == "PE1"){
+                                    return 4;
+                                }
+                                else if(modelData == "PD4"){
+                                    return 5;
+                                }
+                                else if(modelData == "PD6" || modelData == "PD7"){
+                                    return 6;
+                                }
+                                else if(modelData == "PD2" || modelData == "PD3"){
+                                    return 8;
+                                }
+                                else if(modelData == "PD0" || modelData == "PD1"){
+                                    return 9;
+                                }
+                            }
                             property int last_mode: -1
                             property int current: 0
                             Component {
@@ -441,8 +555,8 @@ Window {
                                         modeinfo_bottom.color = text_color
                                     }
                                     Component.onCompleted: {
-                                        color = "red"
-                                        modeinfo_bottom.color = "black"
+                                        color = tiva_border.list_mode_color
+                                        modeinfo_bottom.color = tiva_border.list_text_color
                                     }
                                     MouseArea {
                                         anchors.fill: parent
@@ -451,19 +565,19 @@ Window {
                                         onEntered: {
                                             if(list_bottom.last_mode != list_index)
                                             {
-                                                parent.set_color("black","red")
+                                                parent.set_color(tiva_border.list_mode_hovered_color,tiva_border.list_text_hovered_color)
                                             }
                                         }
                                         onExited: {
                                             if(list_bottom.last_mode != list_index)
                                             {
-                                                parent.set_color("red","black")
+                                                parent.set_color(tiva_border.list_mode_color,tiva_border.list_text_color)
                                             }
                                         }
                                         onClicked: {
                                             if(list_bottom.last_mode == -1)
                                             {
-                                                parent.set_color("green","black")
+                                                parent.set_color(tiva_border.list_configured_color,tiva_border.list_text_color)
                                                 list_bottom.last_mode = list_index
                                                 tiva.configration[modelData] = parent.mode
                                                 tiva.last_pin_mode = tiva.configration[modelData]
@@ -474,7 +588,7 @@ Window {
                                             }
                                             else if(list_bottom.last_mode == list_index)
                                             {
-                                                parent.set_color("red","black")
+                                                parent.set_color(tiva_border.list_mode_color,tiva_border.list_text_color)
                                                 list_bottom.last_mode = -1
                                                 tiva.configration[modelData] = "NULL"
                                                 tiva.last_pin_mode = tiva.configration[modelData]
@@ -485,7 +599,7 @@ Window {
                                             else
                                             {
                                                 list_bottom.reset_list()
-                                                parent.set_color("green","black")
+                                                parent.set_color(tiva_border.list_configured_color,tiva_border.list_text_color)
                                                 list_bottom.last_mode = list_index
                                                 tiva.configration[modelData] = parent.mode
                                                 tiva.last_pin_mode = tiva.configration[modelData]
@@ -498,12 +612,12 @@ Window {
                                     Text {
                                         id: modeinfo_bottom
                                         text: name
-                                        font.pixelSize: parent.height * 0.8
+                                        font.pixelSize: parent.height * 0.75
                                         anchors.centerIn: parent
                                     }
                                 }
                             }
-                            model: ModeList {}
+                            model: ModeListBottom {id: modebottom}
                             delegate: modesDelegatebottom
                             focus: tiva_border.pin_selected && tiva_border.pin_name == modelData ? true : false
                             visible: tiva_border.pin_selected && tiva_border.pin_name == modelData ? true : false
@@ -514,34 +628,34 @@ Window {
                             {
                                 for(var i = 0;i<count;i++)
                                 {
-                                    itemAtIndex(i).set_color("red","black")
+                                    itemAtIndex(i).set_color(tiva_border.list_mode_color,tiva_border.list_text_color)
                                 }
                             }
 
                             function handle_list(key)
                             {
-                                if(key === Qt.Key_Down && current < 6 && current >= 0)
+                                if(key === Qt.Key_Down && current < numberOfMode - 1 && current >= 0)
                                 {
                                     if(current != last_mode)
                                     {
-                                        itemAtIndex(current).set_color("red","black")
+                                        itemAtIndex(current).set_color(tiva_border.list_mode_color,tiva_border.list_text_color)
                                     }
                                     current++
                                     if(current != last_mode)
                                     {
-                                        itemAtIndex(current).set_color("black","red")
+                                        itemAtIndex(current).set_color(tiva_border.list_mode_hovered_color,tiva_border.list_text_hovered_color)
                                     }
                                 }
-                                else if(key === Qt.Key_Up && current > 0 && current <= 6)
+                                else if(key === Qt.Key_Up && current > 0 && current <= numberOfMode - 1)
                                 {
                                     if(current != last_mode)
                                     {
-                                        itemAtIndex(current).set_color("red","black")
+                                        itemAtIndex(current).set_color(tiva_border.list_mode_color,tiva_border.list_text_color)
                                     }
                                     current--
                                     if(current != last_mode)
                                     {
-                                        itemAtIndex(current).set_color("black","red")
+                                        itemAtIndex(current).set_color(tiva_border.list_mode_hovered_color,tiva_border.list_text_hovered_color)
                                     }
                                 }
                                 else if(key === Qt.Key_Enter - 1)
@@ -550,10 +664,10 @@ Window {
                                     {
                                         tiva.configration[modelData] = itemAtIndex(current).mode
                                         tiva.last_pin_mode = tiva.configration[modelData]
-                                        itemAtIndex(current).set_color("green","black")
+                                        itemAtIndex(current).set_color(tiva_border.list_configured_color,tiva_border.list_text_color)
                                         if(last_mode != -1)
                                         {
-                                            itemAtIndex(last_mode).set_color("red","black")
+                                            itemAtIndex(last_mode).set_color(tiva_border.list_mode_color,tiva_border.list_text_color)
                                         }
                                         last_mode = current
                                         container.state = "configrationanchors"
@@ -564,7 +678,7 @@ Window {
                                     {
                                         tiva.configration[modelData] = "NULL"
                                         tiva.last_pin_mode = tiva.configration[modelData]
-                                        itemAtIndex(last_mode).set_color("red","black")
+                                        itemAtIndex(last_mode).set_color(tiva_border.list_mode_color,tiva_border.list_text_color)
                                         last_mode= -1
                                         container.state = "normalanchors"
                                         load_config.sourceComponent = undefined
@@ -595,18 +709,18 @@ Window {
                         color:  {
                             if(list_right.last_mode != -1)
                             {
-                                pin_name_right.color = "black"
-                                return tiva_border.configured_color
+                                pin_name_right.color = tiva_border.pin_text_configured_color
+                                return tiva_border.pin_configured_color
                             }
                             else if(mouseright.containsMouse)
                             {
-                                pin_name_right.color = "red"
-                                return tiva_border.hovered_color
+                                pin_name_right.color = tiva_border.pin_text_color
+                                return tiva_border.pin_hovered_color
                             }
                             else
                             {
-                                pin_name_right.color = "red"
-                                return tiva_border.default_color
+                                pin_name_right.color = tiva_border.pin_text_color
+                                return tiva_border.pin_default_color
                             }
                         }
                         border.color: "red"
@@ -617,7 +731,6 @@ Window {
                         Text {
                             id: pin_name_right
                             anchors.centerIn: parent
-                            color: "red"
                             text: modelData
                             font.pixelSize: parent.height * 0.4
                             font.family: "Comic Sans MS"
@@ -627,6 +740,59 @@ Window {
                             width: parent.width*2
                             height: parent.height*count
                             anchors.left: parent.right
+                            Component.onCompleted: {
+                                if(modelData == "PB3"){
+                                    moderight.remove(4,39)
+                                }
+                                else if(modelData == "PB4"){
+                                    moderight.remove(9,34)
+                                    moderight.remove(2,2)
+                                }
+                                else if(modelData == "PB5"){
+                                    moderight.remove(14,29)
+                                    moderight.remove(2,7)
+                                }
+                                else if(modelData == "PB6"){
+                                    moderight.remove(17,26)
+                                    moderight.remove(2,12)
+                                }
+                                else if(modelData == "PB7"){
+                                    moderight.remove(20,23)
+                                    moderight.remove(2,15)
+                                }
+                                else if(modelData == "PC4"){
+                                    moderight.remove(27,16)
+                                    moderight.remove(2,18)
+                                }
+                                else if(modelData == "PC5"){
+                                    moderight.remove(34,9)
+                                    moderight.remove(2,25)
+                                }
+                                else if(modelData == "PC6"){
+                                    moderight.remove(39,4)
+                                    moderight.remove(2,32)
+                                }
+                                else if(modelData == "PC7"){
+                                    moderight.remove(2,37)
+                                }
+                            }
+                            property int numberOfMode: {
+                                if(modelData == "PB3"){
+                                    return 4;
+                                }
+                                else if(modelData == "PB6" || modelData == "PB7"){
+                                    return 5;
+                                }
+                                else if(modelData == "PC7"){
+                                    return 6;
+                                }
+                                else if(modelData == "PB4" || modelData == "PB5" || modelData == "PC6"){
+                                    return 7;
+                                }
+                                else if(modelData == "PC4" || modelData == "PC5"){
+                                    return 9;
+                                }
+                            }
                             property int last_mode: -1
                             property int current: 0
                             Component {
@@ -644,8 +810,8 @@ Window {
                                         modeinfo_right.color = text_color
                                     }
                                     Component.onCompleted: {
-                                        color = "red"
-                                        modeinfo_right.color = "black"
+                                        color = tiva_border.list_mode_color
+                                        modeinfo_right.color = tiva_border.list_text_color
                                     }
                                     MouseArea {
                                         anchors.fill: parent
@@ -654,19 +820,19 @@ Window {
                                         onEntered: {
                                             if(list_right.last_mode != list_index)
                                             {
-                                                parent.set_color("black","red")
+                                                parent.set_color(tiva_border.list_mode_hovered_color,tiva_border.list_text_hovered_color)
                                             }
                                         }
                                         onExited: {
                                             if(list_right.last_mode != list_index)
                                             {
-                                                parent.set_color("red","black")
+                                                parent.set_color(tiva_border.list_mode_color,tiva_border.list_text_color)
                                             }
                                         }
                                         onClicked: {
                                             if(list_right.last_mode == -1)
                                             {
-                                                parent.set_color("green","black")
+                                                parent.set_color(tiva_border.list_configured_color,tiva_border.list_text_color)
                                                 list_right.last_mode = list_index
                                                 tiva.configration[modelData] = parent.mode
                                                 tiva.last_pin_mode = tiva.configration[modelData]
@@ -676,7 +842,7 @@ Window {
                                             }
                                             else if(list_right.last_mode == list_index)
                                             {
-                                                parent.set_color("red","black")
+                                                parent.set_color(tiva_border.list_mode_color,tiva_border.list_text_color)
                                                 list_right.last_mode = -1
                                                 tiva.configration[modelData] = "NULL"
                                                 container.state = "normalanchors"
@@ -686,7 +852,7 @@ Window {
                                             else
                                             {
                                                 list_right.reset_list()
-                                                parent.set_color("green","black")
+                                                parent.set_color(tiva_border.list_configured_color,tiva_border.list_text_color)
                                                 list_right.last_mode = list_index
                                                 tiva.configration[modelData] = parent.mode
                                                 container.state = "configrationanchors"
@@ -698,12 +864,12 @@ Window {
                                     Text {
                                         id: modeinfo_right
                                         text: name
-                                        font.pixelSize: parent.height * 0.8
+                                        font.pixelSize: parent.height * 0.75
                                         anchors.centerIn: parent
                                     }
                                 }
                             }
-                            model: ModeList {}
+                            model: ModeListRight {id: moderight}
                             delegate: modesDelegateright
                             focus: tiva_border.pin_selected && tiva_border.pin_name == modelData ? true : false
                             visible: tiva_border.pin_selected && tiva_border.pin_name == modelData ? true : false
@@ -714,34 +880,34 @@ Window {
                             {
                                 for(var i = 0;i<count;i++)
                                 {
-                                    itemAtIndex(i).set_color("red","black")
+                                    itemAtIndex(i).set_color(tiva_border.list_mode_color,tiva_border.list_text_color)
                                 }
                             }
 
                             function handle_list(key)
                             {
-                                if(key === Qt.Key_Down && current < 6 && current >= 0)
+                                if(key === Qt.Key_Down && current < numberOfMode - 1 && current >= 0)
                                 {
                                     if(current != last_mode)
                                     {
-                                        itemAtIndex(current).set_color("red","black")
+                                        itemAtIndex(current).set_color(tiva_border.list_mode_color,tiva_border.list_text_color)
                                     }
                                     current++
                                     if(current != last_mode)
                                     {
-                                        itemAtIndex(current).set_color("black","red")
+                                        itemAtIndex(current).set_color(tiva_border.list_mode_hovered_color,tiva_border.list_text_hovered_color)
                                     }
                                 }
-                                else if(key === Qt.Key_Up && current > 0 && current <= 6)
+                                else if(key === Qt.Key_Up && current > 0 && current <= numberOfMode - 1)
                                 {
                                     if(current != last_mode)
                                     {
-                                        itemAtIndex(current).set_color("red","black")
+                                        itemAtIndex(current).set_color(tiva_border.list_mode_color,tiva_border.list_text_color)
                                     }
                                     current--
                                     if(current != last_mode)
                                     {
-                                        itemAtIndex(current).set_color("black","red")
+                                        itemAtIndex(current).set_color(tiva_border.list_mode_hovered_color,tiva_border.list_text_hovered_color)
                                     }
                                 }
                                 else if(key === Qt.Key_Enter - 1)
@@ -750,10 +916,10 @@ Window {
                                     {
                                         tiva.configration[modelData] = itemAtIndex(current).mode
                                         tiva.last_pin_mode = tiva.configration[modelData]
-                                        itemAtIndex(current).set_color("green","black")
+                                        itemAtIndex(current).set_color(tiva_border.list_configured_color,tiva_border.list_text_color)
                                         if(last_mode != -1)
                                         {
-                                            itemAtIndex(last_mode).set_color("red","black")
+                                            itemAtIndex(last_mode).set_color(tiva_border.list_mode_color,tiva_border.list_text_color)
                                         }
                                         last_mode = current
                                         container.state = "configrationanchors"
@@ -764,7 +930,7 @@ Window {
                                     {
                                         tiva.configration[modelData] = "NULL"
                                         tiva.last_pin_mode = tiva.configration[modelData]
-                                        itemAtIndex(last_mode).set_color("red","black")
+                                        itemAtIndex(last_mode).set_color(tiva_border.list_mode_color,tiva_border.list_text_color)
                                         last_mode= -1
                                         container.state = "normalanchors"
                                         load_config.sourceComponent = undefined
@@ -795,18 +961,18 @@ Window {
                         color:  {
                             if(list_left.last_mode != -1)
                             {
-                                pin_name_left.color = "black"
-                                return tiva_border.configured_color
+                                pin_name_left.color = tiva_border.pin_text_configured_color
+                                return tiva_border.pin_configured_color
                             }
                             else if(mouseleft.containsMouse)
                             {
-                                pin_name_left.color = "red"
-                                return tiva_border.hovered_color
+                                pin_name_left.color = tiva_border.pin_text_color
+                                return tiva_border.pin_hovered_color
                             }
                             else
                             {
-                                pin_name_left.color = "red"
-                                return tiva_border.default_color
+                                pin_name_left.color = tiva_border.pin_text_color
+                                return tiva_border.pin_default_color
                             }
                         }
                         border.color: "red"
@@ -817,7 +983,6 @@ Window {
                         Text {
                             id: pin_name_left
                             anchors.centerIn: parent
-                            color: "red"
                             text: modelData
                             font.pixelSize: parent.height * 0.4
                             font.family: "Comic Sans MS"
@@ -827,6 +992,62 @@ Window {
                             width: parent.width*2
                             height: parent.height*count
                             anchors.right: parent.left
+                            Component.onCompleted: {
+                                if(modelData == "PE2"){
+                                    modeleft.remove(3,42)
+                                }
+                                else if(modelData == "PE3"){
+                                    modeleft.remove(4,41)
+                                    modeleft.remove(2)
+                                }
+                                else if(modelData == "PE4"){
+                                    modeleft.remove(10,35)
+                                    modeleft.remove(2,2)
+                                }
+                                else if(modelData == "PE5"){
+                                    modeleft.remove(16,29)
+                                    modeleft.remove(2,8)
+                                }
+                                else if(modelData == "PF0"){
+                                    modeleft.remove(24,21)
+                                    modeleft.remove(2,14)
+                                }
+                                else if(modelData == "PF1"){
+                                    modeleft.remove(31,14)
+                                    modeleft.remove(2,22)
+                                }
+                                else if(modelData == "PF2"){
+                                    modeleft.remove(36,9)
+                                    modeleft.remove(2,29)
+                                }
+                                else if(modelData == "PF3"){
+                                    modeleft.remove(41,4)
+                                    modeleft.remove(2,34)
+                                }
+                                else if(modelData == "PF4"){
+                                    modeleft.remove(2,39)
+                                }
+                            }
+                            property int numberOfMode: {
+                                if(modelData == "PE2" || modelData == "PE3"){
+                                    return 3;
+                                }
+                                else if(modelData == "PF4"){
+                                    return 6;
+                                }
+                                else if(modelData == "PF2" || modelData == "PF3"){
+                                    return 7;
+                                }
+                                else if(modelData == "PE4" || modelData == "PE5"){
+                                    return 8;
+                                }
+                                else if(modelData == "PF1"){
+                                    return 9;
+                                }
+                                else if(modelData == "PF0"){
+                                    return 10;
+                                }
+                            }
                             property int last_mode: -1
                             property int current: 0
                             Component {
@@ -844,8 +1065,8 @@ Window {
                                         modeinfo_left.color = text_color
                                     }
                                     Component.onCompleted: {
-                                        color = "red"
-                                        modeinfo_left.color = "black"
+                                        color = tiva_border.list_mode_color
+                                        modeinfo_left.color = tiva_border.list_text_color
                                     }
                                     MouseArea {
                                         anchors.fill: parent
@@ -854,19 +1075,19 @@ Window {
                                         onEntered: {
                                             if(list_left.last_mode != list_index)
                                             {
-                                                parent.set_color("black","red")
+                                                parent.set_color(tiva_border.list_mode_hovered_color,tiva_border.list_text_hovered_color)
                                             }
                                         }
                                         onExited: {
                                             if(list_left.last_mode != list_index)
                                             {
-                                                parent.set_color("red","black")
+                                                parent.set_color(tiva_border.list_mode_color,tiva_border.list_text_color)
                                             }
                                         }
                                         onClicked: {
                                             if(list_left.last_mode == -1)
                                             {
-                                                parent.set_color("green","black")
+                                                parent.set_color(tiva_border.list_configured_color,tiva_border.list_text_color)
                                                 list_left.last_mode = list_index
                                                 tiva.configration[modelData] = parent.mode
                                                 tiva.last_pin_mode = tiva.configration[modelData]
@@ -876,7 +1097,7 @@ Window {
                                             }
                                             else if(list_left.last_mode == list_index)
                                             {
-                                                parent.set_color("red","black")
+                                                parent.set_color(tiva_border.list_mode_color,tiva_border.list_text_color)
                                                 list_left.last_mode = -1
                                                 tiva.configration[modelData] = "NULL"
                                                 tiva.last_pin_mode = tiva.configration[modelData]
@@ -887,7 +1108,7 @@ Window {
                                             else
                                             {
                                                 list_left.reset_list()
-                                                parent.set_color("green","black")
+                                                parent.set_color(tiva_border.list_configured_color,tiva_border.list_text_color)
                                                 list_left.last_mode = list_index
                                                 tiva.configration[modelData] = parent.mode
                                                 tiva.last_pin_mode = tiva.configration[modelData]
@@ -900,12 +1121,12 @@ Window {
                                     Text {
                                         id: modeinfo_left
                                         text: name
-                                        font.pixelSize: parent.height * 0.8
+                                        font.pixelSize: parent.height * 0.75
                                         anchors.centerIn: parent
                                     }
                                 }
                             }
-                            model: ModeList {}
+                            model: ModeListLeft {id: modeleft}
                             delegate: modesDelegateleft
                             focus: tiva_border.pin_selected && tiva_border.pin_name == modelData ? true : false
                             visible: tiva_border.pin_selected && tiva_border.pin_name == modelData ? true : false
@@ -916,34 +1137,34 @@ Window {
                             {
                                 for(var i = 0;i<count;i++)
                                 {
-                                    itemAtIndex(i).set_color("red","black")
+                                    itemAtIndex(i).set_color(tiva_border.list_mode_color,tiva_border.list_text_color)
                                 }
                             }
 
                             function handle_list(key)
                             {
-                                if(key === Qt.Key_Down && current < 6 && current >= 0)
+                                if(key === Qt.Key_Down && current < numberOfMode - 1 && current >= 0)
                                 {
                                     if(current != last_mode)
                                     {
-                                        itemAtIndex(current).set_color("red","black")
+                                        itemAtIndex(current).set_color(tiva_border.list_mode_color,tiva_border.list_text_color)
                                     }
                                     current++
                                     if(current != last_mode)
                                     {
-                                        itemAtIndex(current).set_color("black","red")
+                                        itemAtIndex(current).set_color(tiva_border.list_mode_hovered_color,tiva_border.list_text_hovered_color)
                                     }
                                 }
-                                else if(key === Qt.Key_Up && current > 0 && current <= 6)
+                                else if(key === Qt.Key_Up && current > 0 && current <= numberOfMode - 1)
                                 {
                                     if(current != last_mode)
                                     {
-                                        itemAtIndex(current).set_color("red","black")
+                                        itemAtIndex(current).set_color(tiva_border.list_mode_color,tiva_border.list_text_color)
                                     }
                                     current--
                                     if(current != last_mode)
                                     {
-                                        itemAtIndex(current).set_color("black","red")
+                                        itemAtIndex(current).set_color(tiva_border.list_mode_hovered_color,tiva_border.list_text_hovered_color)
                                     }
                                 }
                                 else if(key === Qt.Key_Enter - 1)
@@ -952,10 +1173,10 @@ Window {
                                     {
                                         tiva.configration[modelData] = itemAtIndex(current).mode
                                         tiva.last_pin_mode = tiva.configration[modelData]
-                                        itemAtIndex(current).set_color("green","black")
+                                        itemAtIndex(current).set_color(tiva_border.list_configured_color,tiva_border.list_text_color)
                                         if(last_mode != -1)
                                         {
-                                            itemAtIndex(last_mode).set_color("red","black")
+                                            itemAtIndex(last_mode).set_color(tiva_border.list_mode_color,tiva_border.list_text_color)
                                         }
                                         last_mode = current
                                         container.state = "configrationanchors"
@@ -966,7 +1187,7 @@ Window {
                                     {
                                         tiva.configration[modelData] = "NULL"
                                         tiva.last_pin_mode = tiva.configration[modelData]
-                                        itemAtIndex(last_mode).set_color("red","black")
+                                        itemAtIndex(last_mode).set_color(tiva_border.list_mode_color,tiva_border.list_text_color)
                                         last_mode= -1
                                         container.state = "normalanchors"
                                         load_config.sourceComponent = undefined
@@ -1063,8 +1284,11 @@ Window {
                                 zoom_out_rec.color = "white"
                             }
                             onClicked: {
-                                tiva_border.height -= 10
-                                tiva_border.width -= 10
+                                if(tiva_border.height >= 200)
+                                {
+                                    tiva_border.height -= 10
+                                    tiva_border.width -= 10
+                                }
                             }
                         }
                     }

@@ -2,15 +2,15 @@ import QtQuick 2.0
 
 ListModel {
     ListElement {
-        name: "UART"
+        name: "Input"
         property int list_index: 0
     }
     ListElement {
-        name: "Input"
-        property int list_index: 1
-    }
-    ListElement {
         name: "Output"
+        property int list_index: 1
+    }   
+    ListElement {
+        name: "UART"
         property int list_index: 2
     }
     ListElement {
