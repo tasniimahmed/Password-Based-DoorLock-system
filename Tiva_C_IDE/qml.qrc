@@ -1,7 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
-        <file>ModeList.qml</file>
         <file>texas_logo.png</file>
         <file>zoom_in.png</file>
         <file>zoom_out.png</file>
@@ -11,5 +10,6 @@
         <file>ModeListBottom.qml</file>
         <file>ModeListRight.qml</file>
         <file>ModeListLeft.qml</file>
+        <file>GPIOConfigration.qml</file>
     </qresource>
 </RCC>

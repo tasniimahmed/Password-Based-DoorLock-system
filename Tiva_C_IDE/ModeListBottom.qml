@@ -126,12 +126,8 @@ ListModel {
         property int list_index: 2
     }
     ListElement {
-        name: "U6Rx"
-        property int list_index: 3
-    }
-    ListElement {
         name: "WT4CCP0"
-        property int list_index: 4
+        property int list_index: 3
     }
     // PD6
     ListElement {

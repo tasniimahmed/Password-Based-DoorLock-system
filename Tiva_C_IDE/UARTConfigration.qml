@@ -1,6 +1,5 @@
 import QtQuick 2.9
 import QtQuick.Layouts 1.3
-import QtQuick.Controls.Styles 1.4
 
 Item {
     id: uart

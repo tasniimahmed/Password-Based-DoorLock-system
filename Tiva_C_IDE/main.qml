@@ -2,6 +2,7 @@ import QtQuick 2.14
 import QtQuick.Window 2.12
 import QtQuick.Controls 2.1
 import QtQuick.Layouts 1.3
+import QMap 1.0
 
 Window {
     id: tiva
@@ -12,14 +13,6 @@ Window {
     title: qsTr("TM4C123GX IDE")
     property var configration: {"PA2": "NULL","PA3": "NULL","PA4": "NULL","PA5": "NULL","PA6": "NULL","PA7": "NULL","PB0": "NULL","PB1": "NULL","PB2": "NULL","PE1": "NULL","PE0": "NULL","PD7": "NULL","PD6": "NULL","PD4": "NULL","PD3": "NULL","PD2": "NULL","PD1": "NULL","PD0": "NULL","PB3": "NULL","PB4": "NULL","PB5": "NULL","PB6": "NULL","PB7": "NULL","PC4": "NULL","PC5": "NULL","PC6": "NULL","PC7": "NULL","PF4": "NULL","PF3": "NULL","PF2": "NULL","PF1": "NULL","PF0": "NULL","PE5": "NULL","PE4": "NULL","PE3": "NULL","PE2": "NULL"}
     property string last_pin_mode: "NULL"
-    function readValues(map)
-    {
-        for(var i in map)
-        {
-            console.log(map[i])
-        }
-    }
-
     Rectangle {
         id: container
         anchors.horizontalCenter: parent.horizontalCenter
@@ -94,11 +87,18 @@ Window {
                 anchors.fill: parent
                 acceptedButtons: Qt.LeftButton
                 hoverEnabled: true
+                MapQML {
+                    id: mapRaye2
+                }
                 onEntered: {
                     parent.color = " dark green"
                 }
                 onExited: {
                     parent.color = "green"
+                }
+                onClicked: {
+                    mapRaye2.setModes(tiva.configration)
+                    mapRaye2.configrationGenerated()
                 }
             }
         }
@@ -107,13 +107,32 @@ Window {
             anchors.left: parent.left
             height: parent.height
             Loader {
-                id: load_config
+                id: load_configrations
                 anchors.fill: parent
             }
         }
         Component {
-            id: config_window
+            id: uart_window
             UARTConfigration {
+                width: tiva.width*0.35
+                anchors.left: tiva.left
+                height: tiva.height
+                Text {
+                    id: pinnametext
+                    anchors.top: parent.top
+                    anchors.topMargin: 10
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    color: "black"
+                    text: tiva_border.pin_name + " " + tiva.last_pin_mode + " Configrations"
+                    font.pixelSize: parent.width*0.05
+                    font.bold: true
+                    font.family: "Comic Sans MS"
+                }
+            }
+        }
+        Component {
+            id: gpio_window
+            GPIOConfigration {
                 width: tiva.width*0.35
                 anchors.left: tiva.left
                 height: tiva.height
@@ -295,8 +314,16 @@ Window {
                                                 list_top.last_mode = list_index
                                                 tiva.configration[modelData] = parent.mode
                                                 tiva.last_pin_mode = tiva.configration[modelData]
-                                                container.state = "configrationanchors"
-                                                load_config.sourceComponent = config_window
+                                                if((modelData == "PB0" || modelData == "PB1") && (parent.mode == "U1Tx" || parent.mode == "U1Rx"))
+                                                {
+                                                    container.state = "configrationanchors"
+                                                    load_configrations.sourceComponent = uart_window
+                                                }
+                                                else if (parent.mode == "Input" || parent.mode == "Output")
+                                                {
+                                                    container.state = "configrationanchors"
+                                                    load_configrations.sourceComponent = gpio_window
+                                                }
                                                 console.log(tiva_border.pin_name,tiva.configration[modelData])
                                             }
                                             else if(list_top.last_mode == list_index)
@@ -306,7 +333,7 @@ Window {
                                                 tiva.configration[modelData] = "NULL"
                                                 tiva.last_pin_mode = tiva.configration[modelData]
                                                 container.state = "normalanchors"
-                                                load_config.sourceComponent = undefined
+                                                load_configrations.sourceComponent = undefined
                                                 console.log(tiva_border.pin_name,tiva.configration[modelData])
                                             }
                                             else
@@ -316,8 +343,16 @@ Window {
                                                 list_top.last_mode = list_index
                                                 tiva.configration[modelData] = parent.mode
                                                 tiva.last_pin_mode = tiva.configration[modelData]
-                                                container.state = "configrationanchors"
-                                                load_config.sourceComponent = config_window
+                                                if((modelData == "PB0" || modelData == "PB1") && (parent.mode == "U1Tx" || parent.mode == "U1Rx"))
+                                                {
+                                                    container.state = "configrationanchors"
+                                                    load_configrations.sourceComponent = uart_window
+                                                }
+                                                else if (parent.mode == "Input" || parent.mode == "Output")
+                                                {
+                                                    container.state = "configrationanchors"
+                                                    load_configrations.sourceComponent = gpio_window
+                                                }
                                                 console.log(tiva_border.pin_name,tiva.configration[modelData])
                                             }
                                         }
@@ -383,8 +418,16 @@ Window {
                                             itemAtIndex(last_mode).set_color(tiva_border.list_mode_color,tiva_border.list_text_color)
                                         }
                                         last_mode = current
-                                        container.state = "configrationanchors"
-                                        load_config.sourceComponent = config_window
+                                        if((modelData == "PB0" || modelData == "PB1") && (itemAtIndex(current).mode === "U1Tx" || itemAtIndex(current).mode === "U1Rx"))
+                                        {
+                                            container.state = "configrationanchors"
+                                            load_configrations.sourceComponent = uart_window
+                                        }
+                                        else if (itemAtIndex(current).mode === "Input" || itemAtIndex(current).mode === "Output")
+                                        {
+                                            container.state = "configrationanchors"
+                                            load_configrations.sourceComponent = gpio_window
+                                        }
                                         console.log(tiva_border.pin_name,tiva.configration[modelData])
                                     }
                                     else
@@ -394,7 +437,7 @@ Window {
                                         itemAtIndex(last_mode).set_color(tiva_border.list_mode_color,tiva_border.list_text_color)
                                         last_mode= -1
                                         container.state = "normalanchors"
-                                        load_config.sourceComponent = undefined
+                                        load_configrations.sourceComponent = undefined
                                         console.log(tiva_border.pin_name,tiva.configration[modelData])
                                     }
                                 }
@@ -487,46 +530,43 @@ Window {
                             anchors.top: parent.bottom
                             Component.onCompleted: {
                                 if(modelData == "PD0"){
-                                    modebottom.remove(9,34)
+                                    modebottom.remove(9,33)
                                 }
                                 else if(modelData == "PD1"){
-                                    modebottom.remove(16,27)
+                                    modebottom.remove(16,26)
                                     modebottom.remove(2,7)
                                 }
                                 else if(modelData == "PD2"){
-                                    modebottom.remove(22,21)
+                                    modebottom.remove(22,20)
                                     modebottom.remove(2,14)
                                 }
                                 else if(modelData == "PD3"){
-                                    modebottom.remove(28,15)
+                                    modebottom.remove(28,14)
                                     modebottom.remove(2,20)
                                 }
                                 else if(modelData == "PD4"){
-                                    modebottom.remove(31,12)
+                                    modebottom.remove(30,12)
                                     modebottom.remove(2,26)
                                 }
                                 else if(modelData == "PD6"){
-                                    modebottom.remove(35,8)
-                                    modebottom.remove(2,29)
+                                    modebottom.remove(34,8)
+                                    modebottom.remove(2,28)
                                 }
                                 else if(modelData == "PD7"){
-                                    modebottom.remove(39,4)
-                                    modebottom.remove(2,33)
+                                    modebottom.remove(38,4)
+                                    modebottom.remove(2,32)
                                 }
                                 else if(modelData == "PE0"){
-                                    modebottom.remove(41,2)
-                                    modebottom.remove(2,37)
+                                    modebottom.remove(40,2)
+                                    modebottom.remove(2,36)
                                 }
                                 else if(modelData == "PE1"){
-                                    modebottom.remove(2,39)
+                                    modebottom.remove(2,38)
                                 }
                             }
                             property int numberOfMode: {
-                                if(modelData == "PE0" || modelData == "PE1"){
+                                if(modelData == "PE0" || modelData == "PE1" || modelData == "PD4"){
                                     return 4;
-                                }
-                                else if(modelData == "PD4"){
-                                    return 5;
                                 }
                                 else if(modelData == "PD6" || modelData == "PD7"){
                                     return 6;
@@ -581,8 +621,21 @@ Window {
                                                 list_bottom.last_mode = list_index
                                                 tiva.configration[modelData] = parent.mode
                                                 tiva.last_pin_mode = tiva.configration[modelData]
-                                                container.state = "configrationanchors"
-                                                load_config.sourceComponent = config_window
+                                                if((modelData == "PD6" || modelData == "PD7" || modelData == "PE0" || modelData == "PE1") && (parent.mode === "U2Tx" || parent.mode === "U2Rx" || parent.mode === "U7Tx" || parent.mode === "U7Rx"))
+                                                {
+                                                    container.state = "configrationanchors"
+                                                    load_configrations.sourceComponent = uart_window
+                                                }
+                                                else if (parent.mode === "Input" || parent.mode === "Output")
+                                                {
+                                                    container.state = "configrationanchors"
+                                                    load_configrations.sourceComponent = gpio_window
+                                                }
+                                                else
+                                                {
+                                                    container.state = "normalanchors"
+                                                    load_configrations.sourceComponent = undefined
+                                                }
                                                 console.log(tiva_border.pin_name,tiva.configration[modelData])
 
                                             }
@@ -593,7 +646,7 @@ Window {
                                                 tiva.configration[modelData] = "NULL"
                                                 tiva.last_pin_mode = tiva.configration[modelData]
                                                 container.state = "normalanchors"
-                                                load_config.sourceComponent = undefined
+                                                load_configrations.sourceComponent = undefined
                                                 console.log(tiva_border.pin_name,tiva.configration[modelData])
                                             }
                                             else
@@ -603,8 +656,21 @@ Window {
                                                 list_bottom.last_mode = list_index
                                                 tiva.configration[modelData] = parent.mode
                                                 tiva.last_pin_mode = tiva.configration[modelData]
-                                                container.state = "configrationanchors"
-                                                load_config.sourceComponent = config_window
+                                                if((modelData == "PD6" || modelData == "PD7" || modelData == "PE0" || modelData == "PE1") && (parent.mode === "U2Tx" || parent.mode === "U2Rx" || parent.mode === "U7Tx" || parent.mode === "U7Rx"))
+                                                {
+                                                    container.state = "configrationanchors"
+                                                    load_configrations.sourceComponent = uart_window
+                                                }
+                                                else if (parent.mode === "Input" || parent.mode === "Output")
+                                                {
+                                                    container.state = "configrationanchors"
+                                                    load_configrations.sourceComponent = gpio_window
+                                                }
+                                                else
+                                                {
+                                                    container.state = "normalanchors"
+                                                    load_configrations.sourceComponent = undefined
+                                                }
                                                 console.log(tiva_border.pin_name,tiva.configration[modelData])
                                             }
                                         }
@@ -670,8 +736,21 @@ Window {
                                             itemAtIndex(last_mode).set_color(tiva_border.list_mode_color,tiva_border.list_text_color)
                                         }
                                         last_mode = current
-                                        container.state = "configrationanchors"
-                                        load_config.sourceComponent = config_window
+                                        if((modelData == "PD6" || modelData == "PD7" || modelData == "PE0" || modelData == "PE1") && (itemAtIndex(current).mode === "U2Tx" || itemAtIndex(current).mode === "U2Rx" || itemAtIndex(current).mode === "U7Tx" || itemAtIndex(current).mode === "U7Rx"))
+                                        {
+                                            container.state = "configrationanchors"
+                                            load_configrations.sourceComponent = uart_window
+                                        }
+                                        else if (itemAtIndex(current).mode === "Input" || itemAtIndex(current).mode === "Output")
+                                        {
+                                            container.state = "configrationanchors"
+                                            load_configrations.sourceComponent = gpio_window
+                                        }
+                                        else
+                                        {
+                                            container.state = "normalanchors"
+                                            load_configrations.sourceComponent = undefined
+                                        }
                                         console.log(tiva_border.pin_name,tiva.configration[modelData])
                                     }
                                     else
@@ -681,7 +760,7 @@ Window {
                                         itemAtIndex(last_mode).set_color(tiva_border.list_mode_color,tiva_border.list_text_color)
                                         last_mode= -1
                                         container.state = "normalanchors"
-                                        load_config.sourceComponent = undefined
+                                        load_configrations.sourceComponent = undefined
                                         console.log(tiva_border.pin_name,tiva.configration[modelData])
                                     }
                                 }
@@ -836,8 +915,21 @@ Window {
                                                 list_right.last_mode = list_index
                                                 tiva.configration[modelData] = parent.mode
                                                 tiva.last_pin_mode = tiva.configration[modelData]
-                                                container.state = "configrationanchors"
-                                                load_config.sourceComponent = config_window
+                                                if((modelData == "PC4" || modelData == "PC5" || modelData == "PC6" || modelData == "PC7") && (parent.mode == "U1Tx" || parent.mode == "U1Rx" || parent.mode == "U3Tx" || parent.mode == "U3Rx" || parent.mode == "U4Tx" || parent.mode == "URTx"))
+                                                {
+                                                    container.state = "configrationanchors"
+                                                    load_configrations.sourceComponent = uart_window
+                                                }
+                                                else if (parent.mode == "Input" || parent.mode == "Output")
+                                                {
+                                                    container.state = "configrationanchors"
+                                                    load_configrations.sourceComponent = gpio_window
+                                                }
+                                                else
+                                                {
+                                                    container.state = "normalanchors"
+                                                    load_configrations.sourceComponent = undefined
+                                                }
                                                 console.log(tiva_border.pin_name,tiva.configration[modelData])
                                             }
                                             else if(list_right.last_mode == list_index)
@@ -846,7 +938,7 @@ Window {
                                                 list_right.last_mode = -1
                                                 tiva.configration[modelData] = "NULL"
                                                 container.state = "normalanchors"
-                                                load_config.sourceComponent = undefined
+                                                load_configrations.sourceComponent = undefined
                                                 console.log(tiva_border.pin_name,tiva.configration[modelData])
                                             }
                                             else
@@ -855,8 +947,21 @@ Window {
                                                 parent.set_color(tiva_border.list_configured_color,tiva_border.list_text_color)
                                                 list_right.last_mode = list_index
                                                 tiva.configration[modelData] = parent.mode
-                                                container.state = "configrationanchors"
-                                                load_config.sourceComponent = config_window
+                                                if((modelData == "PC4" || modelData == "PC5" || modelData == "PC6" || modelData == "PC7") && (parent.mode == "U1Tx" || parent.mode == "U1Rx" || parent.mode == "U3Tx" || parent.mode == "U3Rx" || parent.mode == "U4Tx" || parent.mode == "URTx"))
+                                                {
+                                                    container.state = "configrationanchors"
+                                                    load_configrations.sourceComponent = uart_window
+                                                }
+                                                else if (parent.mode == "Input" || parent.mode == "Output")
+                                                {
+                                                    container.state = "configrationanchors"
+                                                    load_configrations.sourceComponent = gpio_window
+                                                }
+                                                else
+                                                {
+                                                    container.state = "normalanchors"
+                                                    load_configrations.sourceComponent = undefined
+                                                }
                                                 console.log(tiva_border.pin_name,tiva.configration[modelData])
                                             }
                                         }
@@ -922,8 +1027,21 @@ Window {
                                             itemAtIndex(last_mode).set_color(tiva_border.list_mode_color,tiva_border.list_text_color)
                                         }
                                         last_mode = current
-                                        container.state = "configrationanchors"
-                                        load_config.sourceComponent = config_window
+                                        if((modelData == "PC4" || modelData == "PC5" || modelData == "PC6" || modelData == "PC7") && (itemAtIndex(current).mode === "U1Tx" || itemAtIndex(current).mode === "U1Rx" || itemAtIndex(current).mode === "U3Tx" || itemAtIndex(current).mode === "U3Rx" || itemAtIndex(current).mode === "U4Tx" || itemAtIndex(current).mode === "URTx"))
+                                        {
+                                            container.state = "configrationanchors"
+                                            load_configrations.sourceComponent = uart_window
+                                        }
+                                        else if (itemAtIndex(current).mode === "Input" || itemAtIndex(current).mode === "Output")
+                                        {
+                                            container.state = "configrationanchors"
+                                            load_configrations.sourceComponent = gpio_window
+                                        }
+                                        else
+                                        {
+                                            container.state = "normalanchors"
+                                            load_configrations.sourceComponent = undefined
+                                        }
                                         console.log(tiva_border.pin_name,tiva.configration[modelData])
                                     }
                                     else
@@ -933,7 +1051,7 @@ Window {
                                         itemAtIndex(last_mode).set_color(tiva_border.list_mode_color,tiva_border.list_text_color)
                                         last_mode= -1
                                         container.state = "normalanchors"
-                                        load_config.sourceComponent = undefined
+                                        load_configrations.sourceComponent = undefined
                                         console.log(tiva_border.pin_name,tiva.configration[modelData])
                                     }
                                 }
@@ -1091,8 +1209,21 @@ Window {
                                                 list_left.last_mode = list_index
                                                 tiva.configration[modelData] = parent.mode
                                                 tiva.last_pin_mode = tiva.configration[modelData]
-                                                container.state = "configrationanchors"
-                                                load_config.sourceComponent = config_window
+                                                if((modelData == "PE4" || modelData == "PE5") && (parent.mode === "U5Tx" || parent.mode === "U5Rx"))
+                                                {
+                                                    container.state = "configrationanchors"
+                                                    load_configrations.sourceComponent = uart_window
+                                                }
+                                                else if (parent.mode === "Input" || parent.mode === "Output")
+                                                {
+                                                    container.state = "configrationanchors"
+                                                    load_configrations.sourceComponent = gpio_window
+                                                }
+                                                else
+                                                {
+                                                    container.state = "normalanchors"
+                                                    load_configrations.sourceComponent = undefined
+                                                }
                                                 console.log(tiva_border.pin_name,tiva.configration[modelData])
                                             }
                                             else if(list_left.last_mode == list_index)
@@ -1102,7 +1233,7 @@ Window {
                                                 tiva.configration[modelData] = "NULL"
                                                 tiva.last_pin_mode = tiva.configration[modelData]
                                                 container.state = "normalanchors"
-                                                load_config.sourceComponent = undefined
+                                                load_configrations.sourceComponent = undefined
                                                 console.log(tiva_border.pin_name,tiva.configration[modelData])
                                             }
                                             else
@@ -1112,8 +1243,21 @@ Window {
                                                 list_left.last_mode = list_index
                                                 tiva.configration[modelData] = parent.mode
                                                 tiva.last_pin_mode = tiva.configration[modelData]
-                                                container.state = "configrationanchors"
-                                                load_config.sourceComponent = config_window
+                                                if((modelData == "PE4" || modelData == "PE5") && (parent.mode === "U5Tx" || parent.mode === "U5Rx"))
+                                                {
+                                                    container.state = "configrationanchors"
+                                                    load_configrations.sourceComponent = uart_window
+                                                }
+                                                else if (parent.mode === "Input" || parent.mode === "Output")
+                                                {
+                                                    container.state = "configrationanchors"
+                                                    load_configrations.sourceComponent = gpio_window
+                                                }
+                                                else
+                                                {
+                                                    container.state = "normalanchors"
+                                                    load_configrations.sourceComponent = undefined
+                                                }
                                                 console.log(tiva_border.pin_name,tiva.configration[modelData])
                                             }
                                         }
@@ -1179,8 +1323,21 @@ Window {
                                             itemAtIndex(last_mode).set_color(tiva_border.list_mode_color,tiva_border.list_text_color)
                                         }
                                         last_mode = current
-                                        container.state = "configrationanchors"
-                                        load_config.sourceComponent = config_window
+                                        if((modelData == "PE4" || modelData == "PE5") && (itemAtIndex(current).mode === "U5Tx" || itemAtIndex(current).mode === "U5Rx"))
+                                        {
+                                            container.state = "configrationanchors"
+                                            load_configrations.sourceComponent = uart_window
+                                        }
+                                        else if (parent.mode === "Input" || parent.mode === "Output")
+                                        {
+                                            container.state = "configrationanchors"
+                                            load_configrations.sourceComponent = gpio_window
+                                        }
+                                        else
+                                        {
+                                            container.state = "normalanchors"
+                                            load_configrations.sourceComponent = undefined
+                                        }
                                         console.log(tiva_border.pin_name,tiva.configration[modelData])
                                     }
                                     else
@@ -1190,7 +1347,7 @@ Window {
                                         itemAtIndex(last_mode).set_color(tiva_border.list_mode_color,tiva_border.list_text_color)
                                         last_mode= -1
                                         container.state = "normalanchors"
-                                        load_config.sourceComponent = undefined
+                                        load_configrations.sourceComponent = undefined
                                         console.log(tiva_border.pin_name,tiva.configration[modelData])
                                     }
                                 }
