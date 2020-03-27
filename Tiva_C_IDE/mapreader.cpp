@@ -1,4 +1,5 @@
 #include "mapreader.h"
+#include <QDebug>
 
 extern QMap<QString,QString> mapToRaye2;
 
@@ -45,6 +46,12 @@ MapReader::MapReader(QObject *parent) : QObject(parent)
     pinmodes["PF2"] = "NULL";
     pinmodes["PF3"] = "NULL";
     pinmodes["PF4"] = "NULL";
+
+    pinmodes["UART_BoudRate"] = "NULL";
+    pinmodes["UART_FIFO"] = "NULL";
+    pinmodes["UART_HighSpeed"] = "NULL";
+    pinmodes["UART_Parity"] = "NULL";
+    pinmodes["UART_StopBits"] = "NULL";
 
     connect(this,SIGNAL(configrationGenerated()),this,SLOT(copyMap()));
 }
@@ -97,6 +104,12 @@ void MapReader::setModes(QVariantMap qmlMap)
     pinmodes["PF2"] = qmlMap["PF2"];
     pinmodes["PF3"] = qmlMap["PF3"];
     pinmodes["PF4"] = qmlMap["PF4"];
+
+    pinmodes["UART_BoudRate"] = qmlMap["UART_BoudRate"];
+    pinmodes["UART_FIFO"] = qmlMap["UART_FIFO"];
+    pinmodes["UART_HighSpeed"] = qmlMap["UART_HighSpeed"];
+    pinmodes["UART_Parity"] = qmlMap["UART_Parity"];
+    pinmodes["UART_StopBits"] = qmlMap["UART_StopBits"];
 }
 
 void MapReader::copyMap()
@@ -143,4 +156,18 @@ void MapReader::copyMap()
     mapToRaye2["PF2"] = map.toMap()["PF2"].toString();
     mapToRaye2["PF3"] = map.toMap()["PF3"].toString();
     mapToRaye2["PF4"] = map.toMap()["PF4"].toString();
+
+    mapToRaye2["UART_BoudRate"] = map.toMap()["UART_BoudRate"].toString();
+    mapToRaye2["UART_FIFO"] = map.toMap()["UART_FIFO"].toString();
+    mapToRaye2["UART_HighSpeed"] = map.toMap()["UART_HighSpeed"].toString();
+    mapToRaye2["UART_Parity"] = map.toMap()["UART_Parity"].toString();
+    mapToRaye2["UART_StopBits"] = map.toMap()["UART_StopBits"].toString();
+
+    QMapIterator<QString,QString> i(mapToRaye2);
+    while (i.hasNext())
+    {
+        i.next();
+        qDebug() << i.key() << i.value();
+    }
+
 }

@@ -1,9 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
-        <file>texas_logo.png</file>
-        <file>zoom_in.png</file>
-        <file>zoom_out.png</file>
         <file>UARTConfigration.qml</file>
         <file>CustomizingComboBox.qml</file>
         <file>ModeListTop.qml</file>
@@ -11,5 +8,11 @@
         <file>ModeListRight.qml</file>
         <file>ModeListLeft.qml</file>
         <file>GPIOConfigration.qml</file>
+    </qresource>
+    <qresource prefix="/files">
+        <file>images/texas_logo.png</file>
+        <file>images/zoom_in.png</file>
+        <file>images/zoom_out.png</file>
+        <file>images/close_window.png</file>
     </qresource>
 </RCC>

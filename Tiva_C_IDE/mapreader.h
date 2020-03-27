@@ -16,7 +16,7 @@ public:
 private:
     QVariantMap pinmodes;
 signals:
-    Q_INVOKABLE void configrationGenerated();
+    void configrationGenerated();
 
 private slots:
     void copyMap();

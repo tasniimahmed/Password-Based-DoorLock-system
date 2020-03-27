@@ -11,8 +11,11 @@ Window {
     height: 750
     color: "white"
     title: qsTr("TM4C123GX IDE")
-    property var configration: {"PA2": "NULL","PA3": "NULL","PA4": "NULL","PA5": "NULL","PA6": "NULL","PA7": "NULL","PB0": "NULL","PB1": "NULL","PB2": "NULL","PE1": "NULL","PE0": "NULL","PD7": "NULL","PD6": "NULL","PD4": "NULL","PD3": "NULL","PD2": "NULL","PD1": "NULL","PD0": "NULL","PB3": "NULL","PB4": "NULL","PB5": "NULL","PB6": "NULL","PB7": "NULL","PC4": "NULL","PC5": "NULL","PC6": "NULL","PC7": "NULL","PF4": "NULL","PF3": "NULL","PF2": "NULL","PF1": "NULL","PF0": "NULL","PE5": "NULL","PE4": "NULL","PE3": "NULL","PE2": "NULL"}
+    property var configration: {"PA2": "NULL","PA3": "NULL","PA4": "NULL","PA5": "NULL","PA6": "NULL","PA7": "NULL","PB0": "NULL","PB1": "NULL","PB2": "NULL","PE1": "NULL","PE0": "NULL","PD7": "NULL","PD6": "NULL","PD4": "NULL","PD3": "NULL","PD2": "NULL","PD1": "NULL","PD0": "NULL","PB3": "NULL","PB4": "NULL","PB5": "NULL","PB6": "NULL","PB7": "NULL","PC4": "NULL","PC5": "NULL","PC6": "NULL","PC7": "NULL","PF4": "NULL","PF3": "NULL","PF2": "NULL","PF1": "NULL","PF0": "NULL","PE5": "NULL","PE4": "NULL","PE3": "NULL","PE2": "NULL","UART_BoudRate": "NULL","UART_FIFO": "NULL","UART_HighSpeed": "NULL","UART_Parity": "NULL","UART_StopBits": "NULL"}
     property string last_pin_mode: "NULL"
+    MapQML {
+        id: mapRaye2
+    }
     Rectangle {
         id: container
         anchors.horizontalCenter: parent.horizontalCenter
@@ -87,18 +90,11 @@ Window {
                 anchors.fill: parent
                 acceptedButtons: Qt.LeftButton
                 hoverEnabled: true
-                MapQML {
-                    id: mapRaye2
-                }
                 onEntered: {
                     parent.color = " dark green"
                 }
                 onExited: {
                     parent.color = "green"
-                }
-                onClicked: {
-                    mapRaye2.setModes(tiva.configration)
-                    mapRaye2.configrationGenerated()
                 }
             }
         }
@@ -114,9 +110,59 @@ Window {
         Component {
             id: uart_window
             UARTConfigration {
+                id: uart_setting
                 width: tiva.width*0.35
                 anchors.left: tiva.left
                 height: tiva.height
+                Rectangle {
+                    id: close_confic_uart
+                    height: close_window_uart.height*0.1
+                    width: close_window_uart.width*0.1
+                    anchors.top: parent.top
+                    anchors.right: parent.right
+                    anchors.topMargin: 4
+                    anchors.rightMargin: 4
+                    color: "lightsteelblue"
+                    radius: width/5
+                    Image {
+                        id: close_window_uart
+                        source: "files/images/close_window.png"
+                        anchors.centerIn: parent
+                        mipmap: true
+                        scale: 0.1
+                        MouseArea {
+                            anchors.fill: parent
+                            acceptedButtons: Qt.LeftButton
+                            hoverEnabled: true
+                            onEntered: {
+                                close_confic_uart.color = "white"
+                            }
+                            onExited: {
+                                close_confic_uart.color = "lightsteelblue"
+                            }
+                            onClicked: {
+                                container.state = "normalanchors"
+                                load_configrations.sourceComponent = undefined
+                            }
+                        }
+                    }
+                }
+                Connections {
+                    target: mousegen
+                    function onClicked()
+                    {
+                        readUart()
+                        mapRaye2.setModes(tiva.configration)
+                        mapRaye2.configrationGenerated()
+                    }
+                }
+                function readUart()
+                {
+                    for(var i in uartconfigration)
+                    {
+                        tiva.configration[i] = uartconfigration[i]
+                    }
+                }
                 Text {
                     id: pinnametext
                     anchors.top: parent.top
@@ -136,6 +182,39 @@ Window {
                 width: tiva.width*0.35
                 anchors.left: tiva.left
                 height: tiva.height
+                Rectangle {
+                    id: close_confic_gpio
+                    height: close_window_gpio.height*0.1
+                    width: close_window_gpio.width*0.1
+                    anchors.top: parent.top
+                    anchors.right: parent.right
+                    anchors.topMargin: 4
+                    anchors.rightMargin: 4
+                    color: "lightsteelblue"
+                    radius: width/5
+                    Image {
+                        id: close_window_gpio
+                        source: "files/images/close_window.png"
+                        anchors.centerIn: parent
+                        mipmap: true
+                        scale: 0.1
+                        MouseArea {
+                            anchors.fill: parent
+                            acceptedButtons: Qt.LeftButton
+                            hoverEnabled: true
+                            onEntered: {
+                                close_confic_gpio.color = "white"
+                            }
+                            onExited: {
+                                close_confic_gpio.color = "lightsteelblue"
+                            }
+                            onClicked: {
+                                container.state = "normalanchors"
+                                load_configrations.sourceComponent = undefined
+                            }
+                        }
+                    }
+                }
                 Text {
                     id: pinnametext
                     anchors.top: parent.top
@@ -324,7 +403,11 @@ Window {
                                                     container.state = "configrationanchors"
                                                     load_configrations.sourceComponent = gpio_window
                                                 }
-                                                console.log(tiva_border.pin_name,tiva.configration[modelData])
+                                                else
+                                                {
+                                                    container.state = "normalanchors"
+                                                    load_configrations.sourceComponent = undefined
+                                                }
                                             }
                                             else if(list_top.last_mode == list_index)
                                             {
@@ -334,7 +417,6 @@ Window {
                                                 tiva.last_pin_mode = tiva.configration[modelData]
                                                 container.state = "normalanchors"
                                                 load_configrations.sourceComponent = undefined
-                                                console.log(tiva_border.pin_name,tiva.configration[modelData])
                                             }
                                             else
                                             {
@@ -353,7 +435,11 @@ Window {
                                                     container.state = "configrationanchors"
                                                     load_configrations.sourceComponent = gpio_window
                                                 }
-                                                console.log(tiva_border.pin_name,tiva.configration[modelData])
+                                                else
+                                                {
+                                                    container.state = "normalanchors"
+                                                    load_configrations.sourceComponent = undefined
+                                                }
                                             }
                                         }
                                     }
@@ -428,7 +514,11 @@ Window {
                                             container.state = "configrationanchors"
                                             load_configrations.sourceComponent = gpio_window
                                         }
-                                        console.log(tiva_border.pin_name,tiva.configration[modelData])
+                                        else
+                                        {
+                                            container.state = "normalanchors"
+                                            load_configrations.sourceComponent = undefined
+                                        }
                                     }
                                     else
                                     {
@@ -438,7 +528,6 @@ Window {
                                         last_mode= -1
                                         container.state = "normalanchors"
                                         load_configrations.sourceComponent = undefined
-                                        console.log(tiva_border.pin_name,tiva.configration[modelData])
                                     }
                                 }
                             }
@@ -636,8 +725,6 @@ Window {
                                                     container.state = "normalanchors"
                                                     load_configrations.sourceComponent = undefined
                                                 }
-                                                console.log(tiva_border.pin_name,tiva.configration[modelData])
-
                                             }
                                             else if(list_bottom.last_mode == list_index)
                                             {
@@ -647,7 +734,6 @@ Window {
                                                 tiva.last_pin_mode = tiva.configration[modelData]
                                                 container.state = "normalanchors"
                                                 load_configrations.sourceComponent = undefined
-                                                console.log(tiva_border.pin_name,tiva.configration[modelData])
                                             }
                                             else
                                             {
@@ -671,7 +757,6 @@ Window {
                                                     container.state = "normalanchors"
                                                     load_configrations.sourceComponent = undefined
                                                 }
-                                                console.log(tiva_border.pin_name,tiva.configration[modelData])
                                             }
                                         }
                                     }
@@ -751,7 +836,6 @@ Window {
                                             container.state = "normalanchors"
                                             load_configrations.sourceComponent = undefined
                                         }
-                                        console.log(tiva_border.pin_name,tiva.configration[modelData])
                                     }
                                     else
                                     {
@@ -761,7 +845,6 @@ Window {
                                         last_mode= -1
                                         container.state = "normalanchors"
                                         load_configrations.sourceComponent = undefined
-                                        console.log(tiva_border.pin_name,tiva.configration[modelData])
                                     }
                                 }
                             }
@@ -930,7 +1013,6 @@ Window {
                                                     container.state = "normalanchors"
                                                     load_configrations.sourceComponent = undefined
                                                 }
-                                                console.log(tiva_border.pin_name,tiva.configration[modelData])
                                             }
                                             else if(list_right.last_mode == list_index)
                                             {
@@ -939,7 +1021,6 @@ Window {
                                                 tiva.configration[modelData] = "NULL"
                                                 container.state = "normalanchors"
                                                 load_configrations.sourceComponent = undefined
-                                                console.log(tiva_border.pin_name,tiva.configration[modelData])
                                             }
                                             else
                                             {
@@ -962,7 +1043,6 @@ Window {
                                                     container.state = "normalanchors"
                                                     load_configrations.sourceComponent = undefined
                                                 }
-                                                console.log(tiva_border.pin_name,tiva.configration[modelData])
                                             }
                                         }
                                     }
@@ -1042,7 +1122,6 @@ Window {
                                             container.state = "normalanchors"
                                             load_configrations.sourceComponent = undefined
                                         }
-                                        console.log(tiva_border.pin_name,tiva.configration[modelData])
                                     }
                                     else
                                     {
@@ -1052,7 +1131,6 @@ Window {
                                         last_mode= -1
                                         container.state = "normalanchors"
                                         load_configrations.sourceComponent = undefined
-                                        console.log(tiva_border.pin_name,tiva.configration[modelData])
                                     }
                                 }
                             }
@@ -1224,7 +1302,6 @@ Window {
                                                     container.state = "normalanchors"
                                                     load_configrations.sourceComponent = undefined
                                                 }
-                                                console.log(tiva_border.pin_name,tiva.configration[modelData])
                                             }
                                             else if(list_left.last_mode == list_index)
                                             {
@@ -1234,7 +1311,6 @@ Window {
                                                 tiva.last_pin_mode = tiva.configration[modelData]
                                                 container.state = "normalanchors"
                                                 load_configrations.sourceComponent = undefined
-                                                console.log(tiva_border.pin_name,tiva.configration[modelData])
                                             }
                                             else
                                             {
@@ -1258,7 +1334,6 @@ Window {
                                                     container.state = "normalanchors"
                                                     load_configrations.sourceComponent = undefined
                                                 }
-                                                console.log(tiva_border.pin_name,tiva.configration[modelData])
                                             }
                                         }
                                     }
@@ -1338,7 +1413,6 @@ Window {
                                             container.state = "normalanchors"
                                             load_configrations.sourceComponent = undefined
                                         }
-                                        console.log(tiva_border.pin_name,tiva.configration[modelData])
                                     }
                                     else
                                     {
@@ -1348,7 +1422,6 @@ Window {
                                         last_mode= -1
                                         container.state = "normalanchors"
                                         load_configrations.sourceComponent = undefined
-                                        console.log(tiva_border.pin_name,tiva.configration[modelData])
                                     }
                                 }
                             }
@@ -1367,7 +1440,7 @@ Window {
                 }
                 Image {
                     id: tiva_logo
-                    source: "texas_logo.png"
+                    source: "files/images/texas_logo.png"
                     anchors.centerIn: parent
                     scale: parent.height*0.0005
                     mipmap: true
@@ -1394,7 +1467,7 @@ Window {
                     radius: width/5
                     Image {
                         id: zoom_in
-                        source: "zoom_in.png"
+                        source: "files/images/zoom_in.png"
                         anchors.centerIn: parent
                         mipmap: true
                         scale: 0.2
@@ -1426,7 +1499,7 @@ Window {
                     radius: width/5
                     Image {
                         id: zoom_out
-                        source: "zoom_out.png"
+                        source: "files/images/zoom_out.png"
                         anchors.centerIn: parent
                         mipmap: true
                         scale: 0.2
