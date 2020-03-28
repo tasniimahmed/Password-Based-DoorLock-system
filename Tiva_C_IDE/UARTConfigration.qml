@@ -70,7 +70,7 @@ Item {
                 id: parity
                 Layout.row: 1
                 Layout.column: 1
-                model: ["None","Even","Odd"]
+                model: ["Disable","Enable"]
             }
             CustomizingComboBox {
                 id: stopbits

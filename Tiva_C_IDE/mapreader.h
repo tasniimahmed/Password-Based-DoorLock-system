@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QVariantMap>
+#include <string>
+using namespace std;
 
 class MapReader : public QObject
 {
@@ -15,8 +17,10 @@ public:
 
 private:
     QVariantMap pinmodes;
+    string qstringToString(QString);
 signals:
     void configrationGenerated();
+    Q_INVOKABLE void readyToLoadEditor();
 
 private slots:
     void copyMap();

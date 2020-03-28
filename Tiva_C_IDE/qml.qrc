@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/">
-        <file>main.qml</file>
+        <file>main_interface.qml</file>
         <file>UARTConfigration.qml</file>
         <file>CustomizingComboBox.qml</file>
         <file>ModeListTop.qml</file>
@@ -8,6 +8,17 @@
         <file>ModeListRight.qml</file>
         <file>ModeListLeft.qml</file>
         <file>GPIOConfigration.qml</file>
+        <file>DirectoryView.qml</file>
+        <file>Editor.qml</file>
+        <file>TabEditor.qml</file>
+        <file>TivaButton.qml</file>
+        <file>TivaToolBar.qml</file>
+        <file>main_editor.qml</file>
+        <file>icons/debug.png</file>
+        <file>icons/folder1.png</file>
+        <file>icons/folder3.png</file>
+        <file>icons/save.png</file>
+        <file>icons/tiva1.png</file>
     </qresource>
     <qresource prefix="/files">
         <file>images/texas_logo.png</file>

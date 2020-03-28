@@ -120,8 +120,8 @@ Window {
                     width: close_window_uart.width*0.1
                     anchors.top: parent.top
                     anchors.right: parent.right
-                    anchors.topMargin: 4
-                    anchors.rightMargin: 4
+                    anchors.topMargin: 5
+                    anchors.rightMargin: 5
                     color: "lightsteelblue"
                     radius: width/5
                     Image {
@@ -135,10 +135,10 @@ Window {
                             acceptedButtons: Qt.LeftButton
                             hoverEnabled: true
                             onEntered: {
-                                close_confic_uart.color = "white"
+                                close_window_uart.scale = 0.12
                             }
                             onExited: {
-                                close_confic_uart.color = "lightsteelblue"
+                                close_window_uart.scale = 0.1
                             }
                             onClicked: {
                                 container.state = "normalanchors"
@@ -188,8 +188,8 @@ Window {
                     width: close_window_gpio.width*0.1
                     anchors.top: parent.top
                     anchors.right: parent.right
-                    anchors.topMargin: 4
-                    anchors.rightMargin: 4
+                    anchors.topMargin: 5
+                    anchors.rightMargin: 5
                     color: "lightsteelblue"
                     radius: width/5
                     Image {
@@ -203,10 +203,10 @@ Window {
                             acceptedButtons: Qt.LeftButton
                             hoverEnabled: true
                             onEntered: {
-                                close_confic_gpio.color = "white"
+                                close_window_gpio.scale = 0.12
                             }
                             onExited: {
-                                close_confic_gpio.color = "lightsteelblue"
+                                close_window_gpio.scale = 0.1
                             }
                             onClicked: {
                                 container.state = "normalanchors"

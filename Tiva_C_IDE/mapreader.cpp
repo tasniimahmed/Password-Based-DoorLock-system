@@ -1,7 +1,9 @@
 #include "mapreader.h"
 #include <QDebug>
+#include "notifier.h"
 
-extern QMap<QString,QString> mapToRaye2;
+extern map<string,string> mapToRaye2;
+extern Notifier notify;
 
 MapReader::MapReader(QObject *parent) : QObject(parent)
 {
@@ -54,11 +56,17 @@ MapReader::MapReader(QObject *parent) : QObject(parent)
     pinmodes["UART_StopBits"] = "NULL";
 
     connect(this,SIGNAL(configrationGenerated()),this,SLOT(copyMap()));
+    connect(this,SIGNAL(readyToLoadEditor()),&notify,SLOT(callEditor()));
 }
 
 QVariantMap MapReader::readModes()
 {
     return pinmodes;
+}
+
+string MapReader::qstringToString(QString str)
+{
+    return str.toUtf8().constData();
 }
 
 void MapReader::setModes(QVariantMap qmlMap)
@@ -115,59 +123,60 @@ void MapReader::setModes(QVariantMap qmlMap)
 void MapReader::copyMap()
 {
     QVariant map(pinmodes);
-    mapToRaye2["PA2"] = map.toMap()["PA2"].toString();
-    mapToRaye2["PA3"] = map.toMap()["PA3"].toString();
-    mapToRaye2["PA4"] = map.toMap()["PA4"].toString();
-    mapToRaye2["PA5"] = map.toMap()["PA5"].toString();
-    mapToRaye2["PA6"] = map.toMap()["PA6"].toString();
-    mapToRaye2["PA7"] = map.toMap()["PA7"].toString();
 
-    mapToRaye2["PB0"] = map.toMap()["PB0"].toString();
-    mapToRaye2["PB1"] = map.toMap()["PB1"].toString();
-    mapToRaye2["PB2"] = map.toMap()["PB2"].toString();
-    mapToRaye2["PB3"] = map.toMap()["PB3"].toString();
-    mapToRaye2["PB4"] = map.toMap()["PB4"].toString();
-    mapToRaye2["PB5"] = map.toMap()["PB5"].toString();
-    mapToRaye2["PB6"] = map.toMap()["PB6"].toString();
-    mapToRaye2["PB7"] = map.toMap()["PB7"].toString();
+    mapToRaye2["GPIO_A2"] = qstringToString(map.toMap()["PA2"].toString());
+    mapToRaye2["GPIO_A3"] = qstringToString(map.toMap()["PA3"].toString());
+    mapToRaye2["GPIO_A4"] = qstringToString(map.toMap()["PA4"].toString());
+    mapToRaye2["GPIO_A5"] = qstringToString(map.toMap()["PA5"].toString());
+    mapToRaye2["GPIO_A6"] = qstringToString(map.toMap()["PA6"].toString());
+    mapToRaye2["GPIO_A7"] = qstringToString(map.toMap()["PA7"].toString());
 
-    mapToRaye2["PC4"] = map.toMap()["PC4"].toString();
-    mapToRaye2["PC5"] = map.toMap()["PC5"].toString();
-    mapToRaye2["PC6"] = map.toMap()["PC6"].toString();
-    mapToRaye2["PC7"] = map.toMap()["PC7"].toString();
+    mapToRaye2["GPIO_B0"] = qstringToString(map.toMap()["PB0"].toString());
+    mapToRaye2["GPIO_B1"] = qstringToString(map.toMap()["PB1"].toString());
+    mapToRaye2["GPIO_B2"] = qstringToString(map.toMap()["PB2"].toString());
+    mapToRaye2["GPIO_B3"] = qstringToString(map.toMap()["PB3"].toString());
+    mapToRaye2["GPIO_B4"] = qstringToString(map.toMap()["PB4"].toString());
+    mapToRaye2["GPIO_B5"] = qstringToString(map.toMap()["PB5"].toString());
+    mapToRaye2["GPIO_B6"] = qstringToString(map.toMap()["PB6"].toString());
+    mapToRaye2["GPIO_B7"] = qstringToString(map.toMap()["PB7"].toString());
 
-    mapToRaye2["PD0"] = map.toMap()["PD0"].toString();
-    mapToRaye2["PD1"] = map.toMap()["PD1"].toString();
-    mapToRaye2["PD2"] = map.toMap()["PD2"].toString();
-    mapToRaye2["PD3"] = map.toMap()["PD3"].toString();
-    mapToRaye2["PD4"] = map.toMap()["PD4"].toString();
-    mapToRaye2["PD6"] = map.toMap()["PD6"].toString();
-    mapToRaye2["PD7"] = map.toMap()["PD7"].toString();
+    mapToRaye2["GPIO_C4"] = qstringToString(map.toMap()["PC4"].toString());
+    mapToRaye2["GPIO_C5"] = qstringToString(map.toMap()["PC5"].toString());
+    mapToRaye2["GPIO_C6"] = qstringToString(map.toMap()["PC6"].toString());
+    mapToRaye2["GPIO_C7"] = qstringToString(map.toMap()["PC7"].toString());
 
-    mapToRaye2["PE0"] = map.toMap()["PE0"].toString();
-    mapToRaye2["PE1"] = map.toMap()["PE0"].toString();
-    mapToRaye2["PE2"] = map.toMap()["PE0"].toString();
-    mapToRaye2["PE3"] = map.toMap()["PE0"].toString();
-    mapToRaye2["PE4"] = map.toMap()["PE0"].toString();
-    mapToRaye2["PE5"] = map.toMap()["PE0"].toString();
+    mapToRaye2["GPIO_D0"] = qstringToString(map.toMap()["PD0"].toString());
+    mapToRaye2["GPIO_D1"] = qstringToString(map.toMap()["PD1"].toString());
+    mapToRaye2["GPIO_D2"] = qstringToString(map.toMap()["PD2"].toString());
+    mapToRaye2["GPIO_D3"] = qstringToString(map.toMap()["PD3"].toString());
+    mapToRaye2["GPIO_D4"] = qstringToString(map.toMap()["PD4"].toString());
+    mapToRaye2["GPIO_D6"] = qstringToString(map.toMap()["PD6"].toString());
+    mapToRaye2["GPIO_D7"] = qstringToString(map.toMap()["PD7"].toString());
 
-    mapToRaye2["PF0"] = map.toMap()["PF0"].toString();
-    mapToRaye2["PF1"] = map.toMap()["PF1"].toString();
-    mapToRaye2["PF2"] = map.toMap()["PF2"].toString();
-    mapToRaye2["PF3"] = map.toMap()["PF3"].toString();
-    mapToRaye2["PF4"] = map.toMap()["PF4"].toString();
+    mapToRaye2["GPIO_E0"] = qstringToString(map.toMap()["PE0"].toString());
+    mapToRaye2["GPIO_E1"] = qstringToString(map.toMap()["PE0"].toString());
+    mapToRaye2["GPIO_E2"] = qstringToString(map.toMap()["PE0"].toString());
+    mapToRaye2["GPIO_E3"] = qstringToString(map.toMap()["PE0"].toString());
+    mapToRaye2["GPIO_E4"] = qstringToString(map.toMap()["PE0"].toString());
+    mapToRaye2["GPIO_E5"] = qstringToString(map.toMap()["PE0"].toString());
 
-    mapToRaye2["UART_BoudRate"] = map.toMap()["UART_BoudRate"].toString();
-    mapToRaye2["UART_FIFO"] = map.toMap()["UART_FIFO"].toString();
-    mapToRaye2["UART_HighSpeed"] = map.toMap()["UART_HighSpeed"].toString();
-    mapToRaye2["UART_Parity"] = map.toMap()["UART_Parity"].toString();
-    mapToRaye2["UART_StopBits"] = map.toMap()["UART_StopBits"].toString();
+    mapToRaye2["GPIO_F0"] = qstringToString(map.toMap()["PF0"].toString());
+    mapToRaye2["GPIO_F1"] = qstringToString(map.toMap()["PF1"].toString());
+    mapToRaye2["GPIO_F2"] = qstringToString(map.toMap()["PF2"].toString());
+    mapToRaye2["GPIO_F3"] = qstringToString(map.toMap()["PF3"].toString());
+    mapToRaye2["GPIO_F4"] = qstringToString(map.toMap()["PF4"].toString());
 
-    QMapIterator<QString,QString> i(mapToRaye2);
-    while (i.hasNext())
-    {
-        i.next();
-        qDebug() << i.key() << i.value();
-    }
+    mapToRaye2["UART_BoudRate"] = qstringToString(map.toMap()["UART_BoudRate"].toString());
+    mapToRaye2["UART_FIFO"] = qstringToString(map.toMap()["UART_FIFO"].toString()) == "Disable" ? "FIFO_DISABLE" : "FIFO_ENABLE";
+    mapToRaye2["UART_HighSpeed"] = qstringToString(map.toMap()["UART_HighSpeed"].toString()) == "Disable" ? "HIGHSPEED_DISABLE" : "HIGHSPEED_ENABLE";
+    mapToRaye2["UART_Parity"] = qstringToString(map.toMap()["UART_Parity"].toString()) == "Disable" ? "PARITY_DISABLE" : "PARITY_ENABLE";
+    mapToRaye2["UART_StopBits"] = "UART_STOPBITS_" + qstringToString(map.toMap()["UART_StopBits"].toString());
 
+//    QMapIterator<QString,QString> i(mapToRaye2);
+//    while (i.hasNext())
+//    {
+//        i.next();
+//        qDebug() << i.key() << i.value();
+//    }
+    emit readyToLoadEditor();
 }
