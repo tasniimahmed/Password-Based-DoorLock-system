@@ -1,5 +1,4 @@
 #include "mapreader.h"
-#include <QDebug>
 #include "notifier.h"
 
 extern map<string,string> mapToRaye2;
@@ -172,11 +171,5 @@ void MapReader::copyMap()
     mapToRaye2["UART_Parity"] = qstringToString(map.toMap()["UART_Parity"].toString()) == "Disable" ? "PARITY_DISABLE" : "PARITY_ENABLE";
     mapToRaye2["UART_StopBits"] = "UART_STOPBITS_" + qstringToString(map.toMap()["UART_StopBits"].toString());
 
-//    QMapIterator<QString,QString> i(mapToRaye2);
-//    while (i.hasNext())
-//    {
-//        i.next();
-//        qDebug() << i.key() << i.value();
-//    }
     emit readyToLoadEditor();
 }

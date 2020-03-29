@@ -18,7 +18,7 @@ public:
 
 private:
     QQmlApplicationEngine* interfaceEngine;
-    QQmlApplicationEngine* editorEngine;
+    QQmlApplicationEngine* editorEngine = nullptr;
     QGuiApplication* app;
     Controller* controller;
 private slots:

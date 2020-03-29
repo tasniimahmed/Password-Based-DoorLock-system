@@ -340,10 +340,10 @@ Window {
                                 }
                             }
                             property int numberOfMode: {
-                                if(modelData == "PA2" || modelData == "PA3" || modelData == "PA4" || modelData == "PA5" || modelData == "PB2"){
+                                if(modelData == "PA2" || modelData == "PA3" || modelData == "PA4" || modelData == "PA5"){
                                     return 3;
                                 }
-                                else if(modelData == "PA6" || modelData == "PA7"){
+                                else if(modelData == "PA6" || modelData == "PA7" || modelData == "PB2"){
                                     return 4;
                                 }
                                 else if(modelData == "PB0" || modelData == "PB1"){
