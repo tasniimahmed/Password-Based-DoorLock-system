@@ -11,11 +11,6 @@ IDE::IDE(QGuiApplication* mainApp,int argc, char *argv[],QObject* parent) : QObj
     app = new QGuiApplication(argc,argv);
     app = mainApp;
     const QUrl urlInterface(QStringLiteral("qrc:/main_interface.qml"));
-//    connect(interfaceEngine, &QQmlApplicationEngine::objectCreated,
-//                     app, [urlInterface](QObject *obj, const QUrl &objUrl) {
-//        if (!obj && urlInterface == objUrl)
-//            QCoreApplication::exit(-1);
-//    }, Qt::QueuedConnection);
 
     qmlRegisterType<MapReader>("QMap",1,0,"MapQML");
 
@@ -30,16 +25,18 @@ void IDE::loadEditor()
     {
         editorEngine = new QQmlApplicationEngine;
         controller = new Controller(editorEngine);
-        qDebug() << "entered";
         controller->generate(mapToRaye2);
         const QUrl urlEditor(QStringLiteral("qrc:/main_editor.qml"));
         editorEngine->load(urlEditor);
     }
     else if(editorEngine != nullptr)
     {
-        QObject* pRootObject = editorEngine->rootObjects().first();
-        QQuickWindow* pMainWindow = qobject_cast<QQuickWindow*>(pRootObject);
-        pMainWindow->close();
+        for(int i = 0; i < editorEngine->rootObjects().size();i++)
+        {
+            QObject* object = editorEngine->rootObjects()[i];
+            QQuickWindow* runningEditor = qobject_cast<QQuickWindow*>(object);
+            runningEditor->close();
+        }
         delete controller;
         controller = new Controller(editorEngine);
         controller->generate(mapToRaye2);

@@ -1,5 +1,6 @@
 import QtQuick 2.9
 import QtQuick.Layouts 1.3
+import QtQuick.Dialogs 1.3
 
 Item {
     id: uart
@@ -16,6 +17,14 @@ Item {
             GradientStop { position: 0.0; color: "lightsteelblue" }
             GradientStop { position: 1.0; color: "dark cyan" }
         }
+        MessageDialog {
+            id: configration_dialog
+            title: "UART Configrations"
+            text: "Your configrations are submitted successfully"
+            icon: StandardIcon.Information
+            standardButtons: StandardButton.Ok
+        }
+
         GridLayout{
             anchors.left: parent.left
             anchors.top: parent.top
@@ -127,6 +136,12 @@ Item {
                     uart.uartconfigration["UART_HighSpeed"] = highspeed.currentText
                     uart.uartconfigration["UART_Parity"] = parity.currentText
                     uart.uartconfigration["UART_StopBits"] = stopbits.currentText
+                    configration_dialog.detailedText =  "UART_BoudRate : " + uart.uartconfigration["UART_BoudRate"] +"\n"
+                            + "UART_FIFO : " + uart.uartconfigration["UART_FIFO"] +"\n"
+                            + "UART_HighSpeed : " + uart.uartconfigration["UART_HighSpeed"] +"\n"
+                            + "UART_Parity : " + uart.uartconfigration["UART_Parity"] +"\n"
+                            + "UART_StopBits : " + uart.uartconfigration["UART_StopBits"]
+                    configration_dialog.open()
                 }
             }
         }
